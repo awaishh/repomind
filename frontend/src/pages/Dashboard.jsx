@@ -16,6 +16,7 @@ import {
   X,
 } from "lucide-react";
 import toast from "react-hot-toast";
+import ThemeToggle from "@/components/ThemeToggle";
 
 const STATUS_MAP = {
   cloning: { label: "Cloning…", color: "text-[#737373]", dot: "bg-[#737373]" },
@@ -25,7 +26,7 @@ const STATUS_MAP = {
   error: { label: "Error", color: "text-[#ef4444]", dot: "bg-[#ef4444]" },
 };
 
-export default function Dashboard() {
+export default function Dashboard({ theme, setTheme }) {
   const navigate = useNavigate();
   const { user, logout } = useAuthStore();
   const { repos, fetchRepos, cloneRepo, pollStatus, deleteRepo, isLoading } = useRepoStore();
@@ -104,6 +105,7 @@ export default function Dashboard() {
         <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
           <span className="font-sketch text-2xl text-white">RepoMind</span>
           <div className="flex items-center gap-4">
+            <ThemeToggle theme={theme} setTheme={setTheme} />
             <div className="flex items-center gap-2">
               <div className="w-7 h-7 rounded-full bg-[#1a1a1a] border border-[#262626] flex items-center justify-center text-xs font-medium text-[#737373]">
                 {user?.username?.[0]?.toUpperCase()}

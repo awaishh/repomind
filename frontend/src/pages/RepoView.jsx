@@ -16,8 +16,9 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip";
+import ThemeToggle from "@/components/ThemeToggle";
 
-export default function RepoView() {
+export default function RepoView({ theme, setTheme }) {
   const { repoId } = useParams();
   const navigate = useNavigate();
   const { currentRepo, fetchRepo } = useRepoStore();
@@ -95,6 +96,7 @@ export default function RepoView() {
           </div>
 
           <div className="flex items-center gap-2">
+            <ThemeToggle theme={theme} setTheme={setTheme} compact />
             {/* View toggle */}
             <div className="flex items-center bg-[#111] border border-[#1f1f1f] rounded-lg p-0.5">
               {[

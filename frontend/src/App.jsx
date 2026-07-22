@@ -9,6 +9,7 @@ import Dashboard from "./pages/Dashboard";
 import RepoView from "./pages/RepoView";
 import CodeEditorPage from "./pages/CodeEditorPage";
 import { Loader2 } from "lucide-react";
+import { useTheme } from "./lib/theme";
 
 // Protected Route wrapper
 function ProtectedRoute({ children }) {
@@ -42,6 +43,7 @@ function PublicRoute({ children }) {
 
 function App() {
   const checkAuth = useAuthStore((s) => s.checkAuth);
+  const [theme, setTheme] = useTheme();
 
   useEffect(() => {
     checkAuth();
@@ -64,7 +66,7 @@ function App() {
       <Routes>
         <Route
           path="/"
-          element={<LandingPage />}
+          element={<LandingPage theme={theme} setTheme={setTheme} />}
         />
         <Route
           path="/login"
@@ -86,7 +88,7 @@ function App() {
           path="/dashboard"
           element={
             <ProtectedRoute>
-              <Dashboard />
+              <Dashboard theme={theme} setTheme={setTheme} />
             </ProtectedRoute>
           }
         />
@@ -94,7 +96,7 @@ function App() {
           path="/repo/:repoId"
           element={
             <ProtectedRoute>
-              <RepoView />
+              <RepoView theme={theme} setTheme={setTheme} />
             </ProtectedRoute>
           }
         />
@@ -102,7 +104,7 @@ function App() {
           path="/editor/:repoId?"
           element={
             <ProtectedRoute>
-              <CodeEditorPage />
+              <CodeEditorPage theme={theme} setTheme={setTheme} />
             </ProtectedRoute>
           }
         />

@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { GitBranch, MessageSquare, Layers, ArrowRight, Zap, Search, Code2 } from "lucide-react";
+import ThemeToggle from "@/components/ThemeToggle";
 
 const FEATURES = [
   {
@@ -40,7 +41,7 @@ const MARQUEE_ITEMS = [
   "React", "Next.js", "Express", "FastAPI", "Rust", "Go", "Django", "Rails",
 ];
 
-export default function LandingPage() {
+export default function LandingPage({ theme, setTheme }) {
   const navigate = useNavigate();
 
   return (
@@ -51,6 +52,7 @@ export default function LandingPage() {
         <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
           <span className="font-sketch text-2xl text-white tracking-wide">RepoMind</span>
           <div className="flex items-center gap-3">
+            <ThemeToggle theme={theme} setTheme={setTheme} />
             <button
               onClick={() => navigate("/login")}
               className="text-sm text-[#737373] hover:text-white transition-colors px-3 py-1.5 cursor-pointer"
@@ -135,7 +137,7 @@ export default function LandingPage() {
           className="relative z-10 mt-20 w-full max-w-2xl mx-auto animate-slide-up"
           style={{ animationDelay: "0.65s" }}
         >
-          <div className="rounded-2xl overflow-hidden border border-[#1f1f1f]" style={{ background: "#0d0d0d" }}>
+          <div className="landing-preview rounded-2xl overflow-hidden border border-[#1f1f1f]" style={{ background: "#0d0d0d" }}>
 
             {/* window bar */}
             <div className="flex items-center gap-2 px-5 py-3.5 border-b border-[#1a1a1a]">

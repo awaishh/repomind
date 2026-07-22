@@ -149,6 +149,64 @@
   .animate-marquee { animation: marquee 30s linear infinite; }
 }
 
+/* Theme switcher: light is the product default; dark preserves the original UI. */
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 2rem;
+  padding: 0.35rem 0.65rem;
+  border: 1px solid #d7e2f2;
+  border-radius: 9999px;
+  background: #ffffff;
+  color: #174ea6;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease;
+}
+.theme-toggle:hover { background: #eff6ff; border-color: #93c5fd; }
+.theme-toggle-icon { width: 0.9rem; height: 0.9rem; }
+.theme-toggle-moon { display: none; }
+.theme-toggle-compact { min-height: 1.875rem; padding: 0.35rem; }
+[data-theme="dark"] .theme-toggle { background: #171717; border-color: #333; color: #e5e5e5; }
+[data-theme="dark"] .theme-toggle:hover { background: #262626; border-color: #525252; }
+[data-theme="dark"] .theme-toggle-sun { display: none; }
+[data-theme="dark"] .theme-toggle-moon { display: block; }
+
+/* Light palette overrides for the existing utility-based interface. */
+[data-theme="light"] body { background: #f8fbff; color: #0f172a; }
+[data-theme="light"] .glass { background: rgba(255, 255, 255, 0.86); border-color: #dbeafe; }
+[data-theme="light"] .glass-subtle { background: rgba(255, 255, 255, 0.9); border-bottom-color: #dbeafe; }
+[data-theme="light"] .dot-grid { background-image: radial-gradient(circle, rgba(37, 99, 235, 0.16) 1px, transparent 1px); }
+[data-theme="light"] .text-gradient { background: linear-gradient(135deg, #0f172a 0%, #2563eb 100%); -webkit-background-clip: text; background-clip: text; }
+[data-theme="light"] .border-glow { box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.14), 0 8px 24px rgba(37, 99, 235, 0.16); }
+[data-theme="light"] .border-glow-sm { box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.1), 0 3px 10px rgba(37, 99, 235, 0.1); }
+
+[data-theme="light"] [class~="bg-[#060606]"], [data-theme="light"] [class~="bg-[#090909]"], [data-theme="light"] [class~="bg-[#0a0a0a]"], [data-theme="light"] [class~="bg-[#0b0b0b]"], [data-theme="light"] [class~="bg-[#0d0d0d]"], [data-theme="light"] [class~="bg-[#0f0f0f]"], [data-theme="light"] [class~="bg-[#111]"], [data-theme="light"] [class~="bg-[#141414]"], [data-theme="light"] [class~="bg-[#181818]"], [data-theme="light"] [class~="bg-[#1a1a1a]"], [data-theme="light"] [class~="bg-[#1f1f1f]"] { background-color: #ffffff !important; }
+[data-theme="light"] [class~="border-[#111]"], [data-theme="light"] [class~="border-[#161616]"], [data-theme="light"] [class~="border-[#1a1a1a]"], [data-theme="light"] [class~="border-[#1f1f1f]"], [data-theme="light"] [class~="border-[#262626]"], [data-theme="light"] [class~="border-[#2a2a2a]"], [data-theme="light"] [class~="border-[#333]"], [data-theme="light"] [class~="border-[#444]"], [data-theme="light"] [class~="border-[#555]"] { border-color: #dbeafe !important; }
+[data-theme="light"] [class~="text-white"], [data-theme="light"] [class~="text-[#f5f5f5]"], [data-theme="light"] [class~="text-[#e5e5e5]"], [data-theme="light"] [class~="text-[#d4d4d4]"] { color: #0f172a !important; }
+[data-theme="light"] [class~="text-[#a3a3a3]"], [data-theme="light"] [class~="text-[#737373]"], [data-theme="light"] [class~="text-[#636d83]"], [data-theme="light"] [class~="text-[#555]"], [data-theme="light"] [class~="text-[#4b5263]"], [data-theme="light"] [class~="text-[#404040]"], [data-theme="light"] [class~="text-[#3a3a3a]"], [data-theme="light"] [class~="text-[#333]"], [data-theme="light"] [class~="text-[#2a2a2a]"], [data-theme="light"] [class~="text-[#262626]"], [data-theme="light"] [class~="text-[#252525]"], [data-theme="light"] [class~="text-[#1f1f1f]"] { color: #475569 !important; }
+[data-theme="light"] [class~="bg-white"] { background-color: #2563eb !important; }
+[data-theme="light"] [class~="bg-white"][class~="text-black"], [data-theme="light"] [class~="text-black"] { color: #ffffff !important; }
+[data-theme="light"] [class~="hover:bg-[#111]"]:hover, [data-theme="light"] [class~="hover:bg-[#141414]"]:hover, [data-theme="light"] [class~="hover:bg-[#1a1a1a]"]:hover, [data-theme="light"] [class~="hover:bg-[#e5e5e5]"]:hover { background-color: #eff6ff !important; }
+[data-theme="light"] [class~="bg-white"][class~="hover:bg-[#e5e5e5]"]:hover { background-color: #1d4ed8 !important; }
+[data-theme="light"] [class~="hover:text-white"]:hover, [data-theme="light"] [class~="hover:text-[#737373]"]:hover { color: #2563eb !important; }
+[data-theme="light"] [class~="hover:border-[#2a2a2a]"]:hover, [data-theme="light"] [class~="hover:border-[#333]"]:hover, [data-theme="light"] [class~="hover:border-[#404040]"]:hover { border-color: #93c5fd !important; }
+[data-theme="light"] .markdown-content h1, [data-theme="light"] .markdown-content h2, [data-theme="light"] .markdown-content h3 { color: #0f172a; }
+[data-theme="light"] .markdown-content p, [data-theme="light"] .markdown-content ul, [data-theme="light"] .markdown-content ol { color: #475569; }
+[data-theme="light"] .markdown-content code, [data-theme="light"] .markdown-content pre { background: #eff6ff; border-color: #dbeafe; color: #0f172a; }
+[data-theme="light"] .react-flow__background { background-color: #f8fbff !important; }
+[data-theme="light"] .react-flow__controls, [data-theme="light"] .react-flow__minimap { background: #ffffff !important; border-color: #dbeafe !important; }
+[data-theme="light"] .react-flow__controls-button { color: #475569 !important; fill: #475569 !important; }
+[data-theme="light"] .react-flow__controls-button:hover { background: #eff6ff !important; color: #2563eb !important; fill: #2563eb !important; }
+
+/* The home-page chat preview intentionally remains a dark terminal surface in both modes. */
+[data-theme="light"] .landing-preview [class~="text-white"] { color: #ffffff !important; }
+[data-theme="light"] .landing-preview [class~="text-[#d4d4d4]"] { color: #d4d4d4 !important; }
+[data-theme="light"] .landing-preview [class~="text-[#737373]"] { color: #a3a3a3 !important; }
+[data-theme="light"] .landing-preview [class~="text-[#404040]"], [data-theme="light"] .landing-preview [class~="text-[#333]"], [data-theme="light"] .landing-preview [class~="text-[#2a2a2a]"] { color: #737373 !important; }
+
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }

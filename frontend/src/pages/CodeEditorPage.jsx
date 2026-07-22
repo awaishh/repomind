@@ -5,6 +5,7 @@ import { Bot, FileCode2, FolderOpen, Loader2, PanelLeftOpen, Send, Sparkles, Arr
 import { useRepoStore } from "@/store";
 import api from "@/lib/api";
 import { cn } from "@/lib/utils";
+import ThemeToggle from "@/components/ThemeToggle";
 
 function sortTree(nodes) {
     return [...nodes].sort((a, b) => {
@@ -82,7 +83,7 @@ function TreeNode({ node, selectedPath, onSelect, mode }) {
     );
 }
 
-export default function CodeEditorPage() {
+export default function CodeEditorPage({ theme, setTheme }) {
     const { repoId } = useParams();
     const navigate = useNavigate();
     const { currentRepo, fetchRepo } = useRepoStore();
@@ -332,6 +333,7 @@ export default function CodeEditorPage() {
                         </div>
                     </div>
                     <div className="flex items-center gap-2">
+                        <ThemeToggle theme={theme} setTheme={setTheme} compact />
                         {repoId && currentRepo && (
                             <button
                                 type="button"
@@ -387,7 +389,7 @@ export default function CodeEditorPage() {
                                             height="100%"
                                             language={language}
                                             value={selectedContent}
-                                            theme="vs-dark"
+                                            theme={theme === "light" ? "vs" : "vs-dark"}
                                             options={{
                                                 minimap: { enabled: false },
                                                 fontSize: 14,

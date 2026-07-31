@@ -33,7 +33,7 @@ const chunkSchema = new mongoose.Schema(
       default: 0,
     },
     embedding: {
-      type: [Number], // 3072-dimensional vector for gemini-embedding-001
+      type: [Number], // Supports 768-dim (nomic-embed-text) or 3072-dim (gemini-embedding-001)
       default: [],
     },
   },

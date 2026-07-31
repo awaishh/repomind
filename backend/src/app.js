@@ -18,10 +18,16 @@ app.use(cookieParser());
 import authRoutes from "./routes/auth.routes.js";
 import repoRoutes from "./routes/repo.routes.js";
 import chatRoutes from "./routes/chat.routes.js";
+import meetingRoutes from "./routes/meeting.routes.js";
+import invitationRoutes from "./routes/invitations.routes.js";
+import commitRoutes from "./routes/commit.routes.js";
 
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/repo", repoRoutes);
 app.use("/api/v1/chat", chatRoutes);
+app.use("/api/v1/meeting", meetingRoutes);
+app.use("/api/v1/invitations", invitationRoutes);
+app.use("/api/v1/commits", commitRoutes);
 
 // Global error handler
 app.use((err, req, res, next) => {

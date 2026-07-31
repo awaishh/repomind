@@ -234,7 +234,7 @@ export default function ProjectInsights({ repo, onArchiveChanged, initialTab = "
   useEffect(() => {
     if (!repo) return;
     queueMicrotask(() => {
-      if (tab === "commits" && repo.status === "ready") loadCommits();
+      if (tab === "commits") loadCommits();
       if (tab === "meetings") loadMeetings();
       if (tab === "team") loadMembers();
     });
@@ -336,13 +336,6 @@ export default function ProjectInsights({ repo, onArchiveChanged, initialTab = "
         {/* ── COMMITS tab ───────────────────────────────────── */}
         {tab === "commits" && (
           <div>
-            {repo.status !== "ready" && (
-              <div className="flex items-center gap-2 m-4 p-3 bg-blue-50 border border-blue-100 rounded-lg text-xs text-blue-600">
-                <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                Repository is still linking — commits will appear when ready
-              </div>
-            )}
-
             {loadingCommits ? (
               <div className="flex justify-center py-20">
                 <Loader2 className="w-6 h-6 animate-spin text-[#9aa3b2]" />
@@ -353,17 +346,15 @@ export default function ProjectInsights({ repo, onArchiveChanged, initialTab = "
                   <GitCommit className="w-6 h-6 text-[#9aa3b2]" />
                 </div>
                 <p className="text-sm text-[#687386]">No commits loaded yet.</p>
-                {repo.status === "ready" && (
-                  <button
-                    onClick={loadCommits}
-                    className="text-xs text-blue-600 bg-blue-50 border border-blue-100 px-4 py-2 rounded-lg hover:bg-blue-100 transition-colors"
-                  >
-                    Load commits
-                  </button>
-                )}
+                <button
+                  onClick={loadCommits}
+                  className="text-xs text-blue-600 bg-blue-50 border border-blue-100 px-4 py-2 rounded-lg hover:bg-blue-100 transition-colors font-medium cursor-pointer"
+                >
+                  Sync commits now
+                </button>
               </div>
             ) : (
-              <div className="divide-y divide-[#1a1a1a]">
+              <div className="divide-y divide-[#e4e9f1]">
                 {commits.map(c => (
                   <CommitCard key={c.sha} commit={c} repoId={repo._id} repoUrl={repo.githubUrl} />
                 ))}

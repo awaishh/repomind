@@ -55,7 +55,7 @@ const repoSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["fetching", "ready", "error", "archived"],
+      enum: ["fetching", "parsing", "processing", "linked", "ready", "error", "archived"],
       default: "fetching",
     },
     errorMessage: {

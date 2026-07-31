@@ -1,167 +1,206 @@
 # RepoMind
 
-RepoMind is an AI-enabled repository explorer and editor built for code understanding and rapid navigation. The application combines a React-based frontend with an Express backend to provide repository cloning, semantic indexing, code browsing, and AI-assisted code exploration.
+RepoMind is an enterprise-grade, cloud-native developer intelligence platform designed for repository visualization, high-performance Retrieval-Augmented Generation (RAG) code Q&A, Git commit diff analysis, and asynchronous meeting audio transcription.
 
-## Core capabilities
+The platform employs a decoupled architectural model separating repository metadata management from compute-heavy vector indexing. This architecture guarantees sub-second initial repository linking while deferring RAG vector embedding generation to lazy execution cycles.
 
-- Clone public GitHub repositories and build a repository index.
-- Parse repository file trees and extract code structure.
-- Chunk source files and generate semantic embeddings for retrieval.
-- Provide a full-page code editor interface with Monaco editor.
-- Supply an AI chat assistant that answers questions grounded in the repository content.
-- Support local folder browsing alongside cloned repository exploration.
-- Authenticate users and manage per-user repository state.
+---
 
-## Architecture
+## Architectural Highlights
 
-The repository is organized as a two-part application:
+### Decoupled Repository Linking and Lazy RAG
+Standard code intelligence platforms often execute blocking repository parsing and embedding generation upon initial import, causing severe latency and unnecessary API consumption. RepoMind solves this through a lightweight metadata synchronization layer. Repository structures, branch trees, and metadata are indexed immediately. Full source code chunking and vector embedding generation are deferred until a user initializes a repository Q&A workspace.
 
-- `backend/`
-  - Express server exposing authenticated API endpoints.
-  - MongoDB storage for users, repos, chunks, and chat history.
-  - GitHub repo cloning, file parsing, embedding generation, and AI interaction.
+### High-Performance RAG Pipeline
+RepoMind utilizes a multi-tier Retrieval-Augmented Generation pipeline:
+1. AST-Aware Code Chunking: Source files are segmented into logical structural blocks preserving file paths and line ranges.
+2. Vector Indexing: Code chunks are embedded into dense vector space using a 768-dimensional embedding model stored within a MongoDB vector search collection.
+3. Hybrid Retrieval: User queries execute cosine similarity matching against embedded chunks, supplemented by a secondary structural keyword matching fallback.
+4. Contextual Generation: Relevant context snippets are framed within deterministic system prompts to provide precise code answers with source location references.
 
-- `frontend/`
-  - Vite-powered React application.
-  - Authenticated dashboard, repository viewer, and code editor.
-  - Monaco editor integration for a native code editing experience.
-  - UI components designed for code-centric workflows.
+### Git Diff Intelligence Engine
+The Commit Reader workspace fetches repository commit logs and isolates file diffs. It runs automated change analysis to produce concise change summaries, key impact areas, and developer refactoring insights across commit histories.
 
-## Technology stack
+### Asynchronous Meeting Intelligence
+The Meeting Room module processes technical discussions and standup audio recordings. It executes multi-speaker diarization and topic segmentation, generating key technical headings, identified project blockers/issues, and bulleted action-oriented meeting summaries.
 
-- Node.js, Express, MongoDB, Mongoose
-- React, Vite, Tailwind CSS, Zustand
-- Monaco Editor via `@monaco-editor/react`
-- GitHub repository cloning via `simple-git`
-- Google Gemini REST API for AI generation and README summarization
-- JWT authentication and secure cookie handling
+---
 
-## Prerequisites
+## Key Features
 
-- Node.js 18+ installed
-- MongoDB instance or connection string
-- Google Gemini API key
-- Git available on the host machine
+- Interactive Code Visualizer: Graphical representation of repository directory structures and dependency relationships.
+- Contextual Code Q&A: Natural language chat interface with vector-driven context retrieval referencing exact code files and line numbers.
+- Git Diff Analyzer: Automated commit diff parsing providing commit-level change breakdowns.
+- Meeting Transcription & Insights: Audio processing for development syncs, producing structured summaries and technical key takeaways.
+- Workspace Collaboration: User invitation workflows and shared repository workspace management.
+- Modern Responsive Design System: Accessible light-themed user interface focused on technical readability and clean typography.
 
-## Backend setup
+---
 
-1. Change to the backend directory:
+## System Architecture
 
-```bash
-cd backend
+```
+[ Frontend: React / Vite / Tailwind ]
+               |
+               v (REST API / JSON)
+[ Backend: Node.js / Express ]
+      |        |        |
+      v        v        v
+ [MongoDB]  [Vector] [Local AI / RAG]
+ (Storage)  (Search) (Inference Engine)
 ```
 
-2. Install dependencies:
+---
 
+## Technology Stack
+
+### Frontend
+- Framework: React 18
+- Build Tool: Vite
+- Styling: Custom CSS Design System
+- Icons: Lucide React
+
+### Backend
+- Runtime: Node.js (ES Modules)
+- Framework: Express.js
+- Database: MongoDB with Mongoose ODM
+- Vector Search: MongoDB Vector Index / Cosine Similarity Engine
+- Audio File Handler: Multer
+
+---
+
+## Installation & Setup Guide
+
+### Prerequisites
+- Node.js (v18.x or higher)
+- npm (v9.x or higher)
+- MongoDB Instance (Local MongoDB Community Server or MongoDB Atlas cluster)
+
+---
+
+### Step 1: Clone Repository
 ```bash
-npm install
+git clone https://github.com/your-org/repomind.git
+cd repomind
 ```
 
-3. Create a `.env` file in `backend/` with the following variables:
+---
+
+### Step 2: Configure Environment Variables
+
+Create a `.env` file inside the `backend` directory:
 
 ```env
-MONGO_URI=your-mongodb-connection-string
-ACCESS_TOKEN_SECRET=strong-jwt-access-secret
-REFRESH_TOKEN_SECRET=strong-jwt-refresh-secret
-ACCESS_TOKEN_EXPIRY=1h
-REFRESH_TOKEN_EXPIRY=7d
-CORS_ORIGIN=http://localhost:5173
-GEMINI_API_KEY=your-google-gemini-api-key
+# Server Configuration
 PORT=8000
+CORS_ORIGIN=http://localhost:5173
+
+# Database Configuration
+MONGO_URI=mongodb://localhost:27017/repomind
+
+# Authentication
+ACCESS_TOKEN_SECRET=your_access_token_secret_here
+ACCESS_TOKEN_EXPIRY=1d
+REFRESH_TOKEN_SECRET=your_refresh_token_secret_here
+REFRESH_TOKEN_EXPIRY=7d
+JWT_SECRET=your_jwt_secret_here
+TOKEN_ENCRYPTION_KEY=your_encryption_key_here
+
+# Local AI Engine Configuration
+USE_OLLAMA=true
+OLLAMA_HOST=http://localhost:11434
+OLLAMA_CHAT_MODEL=qwen2.5-coder
+OLLAMA_EMBED_MODEL=nomic-embed-text
 ```
 
-4. Start the backend server:
+---
 
+### Step 3: Install Dependencies
+
+#### Install Backend Dependencies
 ```bash
-npm run dev
-```
-
-The backend listens on port `8000` by default.
-
-## Frontend setup
-
-1. Change to the frontend directory:
-
-```bash
-cd frontend
-```
-
-2. Install dependencies:
-
-```bash
+cd backend
 npm install
 ```
 
-3. Start the frontend development server:
-
+#### Install Frontend Dependencies
 ```bash
+cd ../frontend
+npm install
+```
+
+---
+
+### Step 4: Run Application
+
+#### Start Backend Server
+```bash
+cd backend
 npm run dev
 ```
 
-The frontend proxies `/api` requests to `http://localhost:8000`.
-
-## Development workflow
-
-- Use the dashboard to register or log in.
-- Clone a public GitHub repository using the repository URL.
-- Wait for the repo processing pipeline to complete.
-- Open the repository in the workspace viewer or in the code editor.
-- Ask questions in the chat panel to get AI-assisted explanations.
-- Open local folders in the editor to inspect local files without cloning.
-
-## Application behavior
-
-### Repository processing
-
-When a repository is cloned, the backend performs these steps:
-
-- parses repository metadata and file structure
-- extracts a README summary
-- identifies processable code files
-- chunks file content for semantic retrieval
-- generates embeddings for each chunk
-
-The repository remains available in the user’s dashboard while indexing occurs in the background.
-
-### AI assistant
-
-The AI assistant uses Gemini to answer repository-specific questions. It receives relevant code chunks and conversation history, then returns a grounded response.
-
-### File retrieval
-
-The editor can fetch individual file content from a cloned repository using the backend endpoint:
-
-- `GET /api/v1/repo/:repoId/file?path=<filePath>`
-
-## Project structure
-
-- `backend/src/controllers` - request handlers for auth, repository operations, and chat.
-- `backend/src/services` - repository cloning, parsing, embedding, retrieval, and Gemini integration.
-- `backend/src/models` - MongoDB schemas for users, repositories, chunks, and chats.
-- `frontend/src/pages` - React page views for landing, auth, dashboard, repo view, and editor.
-- `frontend/src/components` - reusable UI elements and chat/canvas components.
-- `frontend/src/store` - state management for authentication and repository workflows.
-
-## Notes
-
-- The backend requires an active MongoDB connection and a valid Gemini API key to fully enable AI features.
-- Local folder browsing in the editor works with browser file input selection and does not require backend cloning.
-- The repository processing pipeline is designed for public GitHub URLs only.
-
-## Recommended commands
-
-From `backend/`:
-
+#### Start Frontend Application
 ```bash
+cd frontend
 npm run dev
 ```
 
-From `frontend/`:
+The frontend application will be accessible at `http://localhost:5173` and the API server at `http://localhost:8000`.
 
-```bash
-npm run dev
+---
+
+## Database Indexing & Vector Search Setup
+
+If using MongoDB Atlas Vector Search, apply the following index definition on the `chunks` collection:
+
+```json
+{
+  "fields": [
+    {
+      "type": "vector",
+      "path": "embedding",
+      "numDimensions": 768,
+      "similarity": "cosine"
+    },
+    {
+      "type": "filter",
+      "path": "repo"
+    },
+    {
+      "type": "filter",
+      "path": "filePath"
+    }
+  ]
+}
 ```
 
-## Contact
+---
 
-Refer to repository source and comments for implementation details. The application is built for rapid codebase exploration, AI-assisted understanding, and developer-focused repository navigation.
+## API Reference
+
+### Authentication Routes
+- `POST /api/v1/users/register` - Create user account
+- `POST /api/v1/users/login` - Authenticate user session
+- `POST /api/v1/users/logout` - Terminate session
+
+### Repository Management
+- `GET /api/v1/repos` - List linked repositories
+- `POST /api/v1/repos/link` - Link repository via URL or path
+- `GET /api/v1/repos/:id` - Fetch repository metadata and file tree
+
+### Q&A & Retrieval
+- `POST /api/v1/qa/ask` - Execute contextual natural language query against repository
+
+### Git Commit Analysis
+- `GET /api/v1/commits/:repoId` - Fetch commit log and file diffs
+- `POST /api/v1/commits/summarize` - Summarize commit diff
+
+### Meeting Analysis
+- `POST /api/v1/meetings/upload/:repoId` - Upload audio recording for analysis
+- `GET /api/v1/meetings/:repoId` - Retrieve meeting summaries and transcripts
+
+---
+
+## License
+
+This project is licensed under the MIT License.

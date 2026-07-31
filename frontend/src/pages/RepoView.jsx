@@ -103,10 +103,8 @@ export default function RepoView({ theme, setTheme }) {
             {/* View toggle floating pill */}
             <div className="flex items-center bg-[#f1f5f9] border border-[#e2e8f0] rounded-full p-1 shadow-sm">
               {[
-                { key: "canvas", icon: FolderTree, label: "Canvas view" },
-                { key: "split", icon: PanelRightOpen, label: "Canvas + Q&A split" },
-                { key: "chat", icon: MessageSquare, label: "Q&A chat" },
                 { key: "insights", icon: Sparkles, label: "Insights & Overview" },
+                { key: "chat", icon: MessageSquare, label: "Q&A chat" },
               ].map(({ key, icon: Icon, label }) => {
                 const isActive = activePanel === key;
                 return (
@@ -148,7 +146,6 @@ export default function RepoView({ theme, setTheme }) {
             {[
               { key: "insights", label: "Overview", icon: Sparkles },
               { key: "chat", label: "Q&A", icon: MessageSquare },
-              { key: "canvas", label: "Code explorer", icon: Code2 },
               { key: "commits", label: "Commits & diffs", icon: GitBranch },
               { key: "meetings", label: "Meetings", icon: MonitorPlay },
               { key: "team", label: "Collaborators", icon: Users },

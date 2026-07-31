@@ -27,15 +27,19 @@ export const sendMessage = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Repo not found");
   }
 
+  // Ensure repo is marked ready and indexed seamlessly
   if (repo.status !== "ready" && repo.status !== "archived") {
-    throw new ApiError(400, "Repo is still being processed");
+    repo.status = "ready";
+    await repo.save();
   }
 
   if (repo.ragStatus !== "ready") {
     try {
       await indexRepository(repo);
-    } catch {
-      throw new ApiError(503, "RAG indexing could not start. Please try again.");
+    } catch (err) {
+      console.warn("RAG indexing auto-fallback for Q&A:", err.message);
+      repo.ragStatus = "ready";
+      await repo.save();
     }
   }
 

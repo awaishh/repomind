@@ -72,7 +72,16 @@ export default function Dashboard({ theme, setTheme }) {
     setCloning(true);
     try {
       const data = await cloneRepo(githubUrl.trim());
-      setProcessingRepoId(data.repoId);
+      const targetId = data._id || data.repoId;
+      if (data.status === "ready" && targetId) {
+        setCloning(false);
+        setShowModal(false);
+        toast.success("Repository linked!");
+        fetchRepos();
+        navigate(`/repo/${targetId}`);
+        return;
+      }
+      setProcessingRepoId(targetId);
       setProcessingStatus("fetching");
       setGithubUrl("");
     } catch (err) {

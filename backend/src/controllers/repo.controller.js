@@ -38,7 +38,7 @@ export const cloneAndProcess = asyncHandler(async (req, res) => {
   if (existing && existing.status === "ready") {
     return res
       .status(200)
-      .json(new ApiResponse(200, existing, "Repo already processed"));
+      .json(new ApiResponse(200, { _id: existing._id, repoId: existing._id, status: "ready" }, "Repo already processed"));
   }
 
   // Create a lightweight repository record; no local clone or RAG work runs here.
@@ -60,7 +60,7 @@ export const cloneAndProcess = asyncHandler(async (req, res) => {
   // Return immediately — processing happens in background
   res
     .status(202)
-    .json(new ApiResponse(202, { repoId: repo._id, status: "fetching" }, "Repository details fetch started"));
+    .json(new ApiResponse(202, { _id: repo._id, repoId: repo._id, status: "fetching" }, "Repository details fetch started"));
 
   // ---- Background processing ----
   try {

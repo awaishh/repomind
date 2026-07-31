@@ -5,6 +5,7 @@ import { ApiResponse } from "../utils/api-response.js";
 import { asyncHandler } from "../utils/async-handler.js";
 import { searchChunks, isAuthQuery } from "../services/retrieval.service.js";
 import { askGemini } from "../services/gemini.service.js";
+import { indexRepository } from "../services/indexing.service.js";
 
 /**
  * Send a message in a chat — performs RAG retrieval then generates a response.
@@ -16,6 +17,9 @@ export const sendMessage = asyncHandler(async (req, res) => {
   if (!repoId || !message) {
     throw new ApiError(400, "repoId and message are required");
   }
+  if (message.length > 800) {
+    throw new ApiError(400, "Please keep your question under 800 characters.");
+  }
 
   // Verify repo exists and belongs to user
   const repo = await Repo.findOne({ _id: repoId, user: userId });
@@ -23,8 +27,16 @@ export const sendMessage = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Repo not found");
   }
 
-  if (repo.status !== "ready") {
+  if (repo.status !== "ready" && repo.status !== "archived") {
     throw new ApiError(400, "Repo is still being processed");
+  }
+
+  if (repo.ragStatus !== "ready") {
+    try {
+      await indexRepository(repo);
+    } catch {
+      throw new ApiError(503, "RAG indexing could not start. Please try again.");
+    }
   }
 
   // Find or create chat
@@ -50,12 +62,12 @@ export const sendMessage = asyncHandler(async (req, res) => {
   // Perform RAG retrieval
   const retrievedChunks = await searchChunks(repoId, message, {
     scopedFiles,
-    topK: 8,
+    topK: 5,
     biasAuth,
   });
 
   // Get recent conversation history (last 6 messages)
-  const recentHistory = chat.messages.slice(-6);
+  const recentHistory = chat.messages.slice(-4);
 
   // Generate AI response
   const aiResponse = await askGemini(message, retrievedChunks, recentHistory);

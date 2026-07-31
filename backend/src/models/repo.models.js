@@ -48,10 +48,15 @@ const repoSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    ragStatus: {
+      type: String,
+      enum: ["not_started", "processing", "ready", "error"],
+      default: "not_started",
+    },
     status: {
       type: String,
-      enum: ["cloning", "parsing", "embedding", "ready", "error"],
-      default: "cloning",
+      enum: ["fetching", "ready", "error", "archived"],
+      default: "fetching",
     },
     errorMessage: {
       type: String,
@@ -65,6 +70,11 @@ const repoSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    collaborators: [{
+      email: { type: String, required: true },
+      role: { type: String, default: "viewer" },
+      invitedAt: { type: Date, default: Date.now },
+    }],
   },
   { timestamps: true }
 );

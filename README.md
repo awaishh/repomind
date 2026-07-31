@@ -22,16 +22,19 @@ RepoMind utilizes a multi-tier Retrieval-Augmented Generation pipeline:
 The Commit Reader workspace fetches repository commit logs and isolates file diffs. It runs automated change analysis to produce concise change summaries, key impact areas, and developer refactoring insights across commit histories.
 
 ### Asynchronous Meeting Intelligence
-The Meeting Room module processes technical discussions and standup audio recordings. It executes multi-speaker diarization and topic segmentation, generating key technical headings, identified project blockers/issues, and bulleted action-oriented meeting summaries.
+The Meeting Room module processes technical discussions and standup audio recordings using AssemblyAI. It executes speaker diarization, auto-chaptering, and NLP topic segmentation, generating:
+- Full audio transcripts with timestamps
+- Key technical headings & topic titles
+- Action items, identified project blockers & issues
+- Executive bulleted summaries
 
 ---
 
 ## Key Features
 
-- Interactive Code Visualizer: Graphical representation of repository directory structures and dependency relationships.
 - Contextual Code Q&A: Natural language chat interface with vector-driven context retrieval referencing exact code files and line numbers.
 - Git Diff Analyzer: Automated commit diff parsing providing commit-level change breakdowns.
-- Meeting Transcription & Insights: Audio processing for development syncs, producing structured summaries and technical key takeaways.
+- AssemblyAI Meeting Intelligence: Speech-to-text processing for development syncs, producing structured summaries, transcripts, and technical key takeaways.
 - Workspace Collaboration: User invitation workflows and shared repository workspace management.
 - Modern Responsive Design System: Accessible light-themed user interface focused on technical readability and clean typography.
 
@@ -40,14 +43,14 @@ The Meeting Room module processes technical discussions and standup audio record
 ## System Architecture
 
 ```
-[ Frontend: React / Vite / Tailwind ]
-               |
-               v (REST API / JSON)
+[ Frontend: React / Vite / Custom Design System ]
+                       |
+                       v (REST API / JSON)
 [ Backend: Node.js / Express ]
-      |        |        |
-      v        v        v
- [MongoDB]  [Vector] [Local AI / RAG]
- (Storage)  (Search) (Inference Engine)
+      |        |        |               |
+      v        v        v               v
+ [MongoDB]  [Vector] [Local AI / RAG] [AssemblyAI Audio]
+ (Storage)  (Search) (Inference Engine) (Transcription)
 ```
 
 ---
@@ -65,7 +68,8 @@ The Meeting Room module processes technical discussions and standup audio record
 - Framework: Express.js
 - Database: MongoDB with Mongoose ODM
 - Vector Search: MongoDB Vector Index / Cosine Similarity Engine
-- Audio File Handler: Multer
+- Audio Speech-to-Text: AssemblyAI API SDK
+- File Uploads: Multer
 
 ---
 
@@ -106,11 +110,11 @@ REFRESH_TOKEN_EXPIRY=7d
 JWT_SECRET=your_jwt_secret_here
 TOKEN_ENCRYPTION_KEY=your_encryption_key_here
 
-# Local AI Engine Configuration
-USE_OLLAMA=true
-OLLAMA_HOST=http://localhost:11434
-OLLAMA_CHAT_MODEL=qwen2.5-coder
-OLLAMA_EMBED_MODEL=nomic-embed-text
+# Speech-to-Text API
+ASSEMBLYAI_API_KEY=your_assemblyai_api_key_here
+
+# Database Reset Command (Optional)
+# npm run reset-db
 ```
 
 ---

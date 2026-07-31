@@ -101,7 +101,7 @@ export default function RepoView({ theme, setTheme }) {
 
           <div className="flex items-center gap-3">
             {/* View toggle floating pill */}
-            <div className="flex items-center bg-[#f1f5f9] border border-[#e2e8f0] rounded-full p-1 shadow-sm h-9">
+            <div className="flex items-center bg-[#f1f5f9] border border-[#e2e8f0] rounded-full p-1 shadow-sm">
               {[
                 { key: "canvas", icon: FolderTree, label: "Canvas view" },
                 { key: "split", icon: PanelRightOpen, label: "Canvas + Q&A split" },
@@ -110,40 +110,33 @@ export default function RepoView({ theme, setTheme }) {
               ].map(({ key, icon: Icon, label }) => {
                 const isActive = activePanel === key;
                 return (
-                  <Tooltip key={key}>
-                    <TooltipTrigger asChild>
-                      <button
-                        onClick={() => setActivePanel(key)}
-                        className={cn(
-                          "w-7 h-7 rounded-full transition-all duration-200 flex items-center justify-center cursor-pointer",
-                          isActive
-                            ? "bg-blue-600 text-white shadow-sm shadow-blue-500/30"
-                            : "text-[#64748b] hover:text-[#0f172a] hover:bg-white/60"
-                        )}
-                      >
-                        <Icon className={cn("w-3.5 h-3.5", isActive ? "text-white stroke-[2.2]" : "stroke-[1.8]")} />
-                      </button>
-                    </TooltipTrigger>
-                    <TooltipContent side="bottom">{label}</TooltipContent>
-                  </Tooltip>
+                  <button
+                    key={key}
+                    title={label}
+                    onClick={() => setActivePanel(key)}
+                    className={cn(
+                      "w-8 h-8 rounded-full transition-all duration-200 flex items-center justify-center cursor-pointer",
+                      isActive
+                        ? "bg-blue-600 shadow-md shadow-blue-500/25"
+                        : "hover:bg-white/80"
+                    )}
+                  >
+                    <Icon className={cn("w-4 h-4 transition-colors", isActive ? "stroke-white text-white" : "stroke-[#64748b] text-[#64748b]")} />
+                  </button>
                 );
               })}
 
-              <div className="w-px h-3.5 bg-[#cbd5e1] mx-1" />
+              <div className="w-px h-4 bg-[#cbd5e1] mx-1" />
 
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <a
-                    href={currentRepo.githubUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="w-7 h-7 rounded-full text-[#64748b] hover:text-[#0f172a] hover:bg-white/60 transition-all duration-200 flex items-center justify-center"
-                  >
-                    <ExternalLink className="w-3.5 h-3.5 stroke-[1.8]" />
-                  </a>
-                </TooltipTrigger>
-                <TooltipContent side="bottom">Open GitHub Repository</TooltipContent>
-              </Tooltip>
+              <a
+                href={currentRepo.githubUrl}
+                target="_blank"
+                rel="noreferrer"
+                title="Open GitHub Repository"
+                className="w-8 h-8 rounded-full hover:bg-white/80 transition-all duration-200 flex items-center justify-center"
+              >
+                <ExternalLink className="w-4 h-4 stroke-[#64748b] text-[#64748b]" />
+              </a>
             </div>
           </div>
         </header>

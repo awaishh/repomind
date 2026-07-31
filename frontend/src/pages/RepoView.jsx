@@ -166,9 +166,6 @@ export default function RepoView({ theme, setTheme }) {
                 {label}
               </button>
             ))}
-            <div className="mt-auto px-2 pt-4 text-xs text-[#9aa3b2] leading-relaxed">
-              RAG indexing starts only when you ask a Q&A question.
-            </div>
           </aside>
           {/* Insights panel — full width when active */}
           {["insights", "commits", "meetings", "team", "archive"].includes(activePanel) && (

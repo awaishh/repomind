@@ -11,6 +11,7 @@ import {
   fetchCommits,
   fetchCommitDiff
 } from "../services/git.service.js";
+import { indexRepository } from "../services/indexing.service.js";
 
 /**
  * Link a repository and cache its metadata/file tree. RAG indexing is lazy
@@ -92,7 +93,8 @@ export const cloneAndProcess = asyncHandler(async (req, res) => {
     repo.status = "ready";
     await repo.save();
 
-    console.log(`✅ Repo ${name} linked: ${fileTree.length} files; RAG deferred until Q&A`);
+    console.log(`✅ Repo ${name} linked: ${fileTree.length} files`);
+    indexRepository(repo).catch(err => console.warn("Background RAG indexing warning:", err.message));
   } catch (err) {
     console.error("Repo processing error:", err);
     repo.status = "ready";

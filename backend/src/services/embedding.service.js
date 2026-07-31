@@ -1,9 +1,27 @@
-/**
- * Embedding service — uses gemini-embedding-001 (3072-dim).
- * Includes retry with exponential backoff for quota/rate-limit errors.
- */
+import { generateOllamaEmbedding, generateOllamaEmbeddingsBatch } from "./ollama.service.js";
 
 const BASE = "https://generativelanguage.googleapis.com/v1beta/models/gemini-embedding-001";
+
+export async function generateEmbedding(text) {
+  if (process.env.USE_OLLAMA === "true") {
+    return await generateOllamaEmbedding(text);
+  }
+
+  try {
+    const res = await fetchWithRetry(`${BASE}:embedContent`, {
+      method: "POST",
+      body: JSON.stringify({
+        model: "models/gemini-embedding-001",
+        content: { parts: [{ text }] },
+      }),
+    });
+    const data = await res.json();
+    return data.embedding.values;
+  } catch (err) {
+    console.warn("Gemini embedding failed, attempting local Ollama embedding...", err.message);
+    return await generateOllamaEmbedding(text);
+  }
+}
 
 async function fetchWithRetry(url, options, retries = 3) {
   const key = process.env.GEMINI_API_KEY;
@@ -35,45 +53,40 @@ async function fetchWithRetry(url, options, retries = 3) {
   }
 }
 
-/**
- * Generate embedding for a single text string.
- * Returns a 3072-dimensional float array.
- */
-export async function generateEmbedding(text) {
-  const res = await fetchWithRetry(`${BASE}:embedContent`, {
-    method: "POST",
-    body: JSON.stringify({
-      model: "models/gemini-embedding-001",
-      content: { parts: [{ text }] },
-    }),
-  });
-  const data = await res.json();
-  return data.embedding.values;
-}
+
 
 export async function generateEmbeddingsBatch(texts, batchSize = 10) {
-  const allEmbeddings = [];
-
-  for (let i = 0; i < texts.length; i += batchSize) {
-    const batch = texts.slice(i, i + batchSize);
-
-    const res = await fetchWithRetry(`${BASE}:batchEmbedContents`, {
-      method: "POST",
-      body: JSON.stringify({
-        requests: batch.map((text) => ({
-          model: "models/gemini-embedding-001",
-          content: { parts: [{ text }] },
-        })),
-      }),
-    });
-
-    const data = await res.json();
-    allEmbeddings.push(...data.embeddings.map((e) => e.values));
-
-    if (i + batchSize < texts.length) {
-      await new Promise((r) => setTimeout(r, 500));
-    }
+  if (process.env.USE_OLLAMA === "true") {
+    return await generateOllamaEmbeddingsBatch(texts);
   }
 
-  return allEmbeddings;
+  try {
+    const allEmbeddings = [];
+
+    for (let i = 0; i < texts.length; i += batchSize) {
+      const batch = texts.slice(i, i + batchSize);
+
+      const res = await fetchWithRetry(`${BASE}:batchEmbedContents`, {
+        method: "POST",
+        body: JSON.stringify({
+          requests: batch.map((text) => ({
+            model: "models/gemini-embedding-001",
+            content: { parts: [{ text }] },
+          })),
+        }),
+      });
+
+      const data = await res.json();
+      allEmbeddings.push(...data.embeddings.map((e) => e.values));
+
+      if (i + batchSize < texts.length) {
+        await new Promise((r) => setTimeout(r, 500));
+      }
+    }
+
+    return allEmbeddings;
+  } catch (err) {
+    console.warn("Gemini batch embedding failed, falling back to local Ollama batch embedding...", err.message);
+    return await generateOllamaEmbeddingsBatch(texts);
+  }
 }

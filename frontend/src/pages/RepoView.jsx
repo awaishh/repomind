@@ -99,42 +99,52 @@ export default function RepoView({ theme, setTheme }) {
             )}
           </div>
 
-          <div className="flex items-center gap-2">
-            {/* View toggle */}
-            <div className="flex items-center bg-[#f1f4f8] border border-[#e4e9f1] rounded-lg p-0.5">
+          <div className="flex items-center gap-3">
+            {/* View toggle floating pill */}
+            <div className="flex items-center bg-[#f1f5f9] border border-[#e2e8f0] rounded-full p-1 shadow-sm">
               {[
-                { key: "canvas", icon: FolderTree, label: "Canvas" },
-                { key: "split", icon: PanelRightOpen, label: "Canvas + Q&A" },
-                { key: "chat", icon: MessageSquare, label: "Q&A only" },
-                { key: "insights", icon: Sparkles, label: "Meetings, Commits & Settings" },
-              ].map(({ key, icon: Icon, label }) => (
-                <Tooltip key={key}>
-                  <TooltipTrigger asChild>
-                    <button
-                      onClick={() => setActivePanel(key)}
-                      className={cn(
-                        "p-1.5 rounded-md transition-colors cursor-pointer",
-                        activePanel === key
-                          ? "bg-white text-blue-600 shadow-sm"
-                          : "text-[#687386] hover:text-[#182133]"
-                      )}
-                    >
-                      <Icon className="w-3.5 h-3.5" />
-                    </button>
-                  </TooltipTrigger>
-                  <TooltipContent>{label}</TooltipContent>
-                </Tooltip>
-              ))}
-            </div>
+                { key: "canvas", icon: FolderTree, label: "Canvas view" },
+                { key: "split", icon: PanelRightOpen, label: "Canvas + Q&A split" },
+                { key: "chat", icon: MessageSquare, label: "Q&A chat" },
+                { key: "insights", icon: Sparkles, label: "Insights & Overview" },
+              ].map(({ key, icon: Icon, label }) => {
+                const isActive = activePanel === key;
+                return (
+                  <Tooltip key={key}>
+                    <TooltipTrigger asChild>
+                      <button
+                        onClick={() => setActivePanel(key)}
+                        className={cn(
+                          "p-2 rounded-full transition-all duration-200 flex items-center justify-center cursor-pointer",
+                          isActive
+                            ? "bg-blue-600 text-white shadow-md shadow-blue-500/25 scale-105"
+                            : "text-[#64748b] hover:text-[#0f172a] hover:bg-white/60"
+                        )}
+                      >
+                        <Icon className="w-4 h-4" />
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent side="bottom">{label}</TooltipContent>
+                  </Tooltip>
+                );
+              })}
 
-            <a
-              href={currentRepo.githubUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="p-2 rounded-lg hover:bg-[#f1f4f8] text-[#687386] hover:text-[#182133] transition-colors"
-            >
-              <ExternalLink className="w-3.5 h-3.5" />
-            </a>
+              <div className="w-px h-4 bg-[#cbd5e1] mx-1" />
+
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <a
+                    href={currentRepo.githubUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="p-2 rounded-full text-[#64748b] hover:text-[#0f172a] hover:bg-white/60 transition-all duration-200 flex items-center justify-center"
+                  >
+                    <ExternalLink className="w-4 h-4" />
+                  </a>
+                </TooltipTrigger>
+                <TooltipContent side="bottom">Open GitHub Repository</TooltipContent>
+              </Tooltip>
+            </div>
           </div>
         </header>
 

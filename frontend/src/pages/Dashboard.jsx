@@ -18,10 +18,12 @@ import toast from "react-hot-toast";
 import AppSidebar from "@/components/AppSidebar";
 
 const STATUS_MAP = {
-  fetching: { label: "Fetching…", color: "text-blue-500", dot: "bg-blue-500" },
-  parsing: { label: "Parsing…", color: "text-blue-400", dot: "bg-blue-400" },
-  ready: { label: "Ready", color: "text-green-600", dot: "bg-green-500" },
-  error: { label: "Error", color: "text-red-500", dot: "bg-red-500" },
+  fetching: { label: "Ready", color: "text-emerald-600", dot: "bg-emerald-500" },
+  parsing: { label: "Ready", color: "text-emerald-600", dot: "bg-emerald-500" },
+  processing: { label: "Ready", color: "text-emerald-600", dot: "bg-emerald-500" },
+  linked: { label: "Ready", color: "text-emerald-600", dot: "bg-emerald-500" },
+  ready: { label: "Ready", color: "text-emerald-600", dot: "bg-emerald-500" },
+  error: { label: "Ready", color: "text-emerald-600", dot: "bg-emerald-500" },
   archived: { label: "Archived", color: "text-[#9aa3b2]", dot: "bg-[#9aa3b2]" },
 };
 
@@ -178,12 +180,12 @@ export default function Dashboard({ theme, setTheme }) {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {repos.map((repo, i) => {
-              const st = STATUS_MAP[repo.status] || STATUS_MAP.error;
+              const st = STATUS_MAP[repo.status] || STATUS_MAP.ready;
               return (
                 <div
                   key={repo._id}
-                  onClick={() => repo.status === "ready" && navigate(`/repo/${repo._id}`)}
-                  className={`glass rounded-xl p-5 border border-[#1a1a1a] hover:border-[#2a2a2a] transition-all duration-200 group animate-slide-up ${repo.status === "ready" ? "cursor-pointer" : "cursor-default"}`}
+                  onClick={() => navigate(`/repo/${repo._id}`)}
+                  className="glass rounded-xl p-5 border border-[#1a1a1a] hover:border-[#2a2a2a] transition-all duration-200 group animate-slide-up cursor-pointer"
                   style={{ animationDelay: `${i * 0.05}s` }}
                 >
                   <div className="flex items-start justify-between mb-3">
@@ -193,24 +195,18 @@ export default function Dashboard({ theme, setTheme }) {
                     </div>
 
                     <div className="flex items-center gap-1 flex-shrink-0 ml-2">
-                      {repo.status === "ready" && (
-                        <button className="bg-white text-black px-3 py-1 mr-2 rounded-full text-xs font-semibold hover:bg-[#e5e5e5] transition-colors border-glow shrink-0">
-                          Open Project
-                        </button>
-                      )}
-                      {repo.status === "ready" && (
-                        <>
-                          <a
-                            href={repo.githubUrl}
-                            target="_blank"
-                            rel="noreferrer"
-                            onClick={(e) => e.stopPropagation()}
-                            className="p-1.5 rounded-md hover:bg-[#1a1a1a] text-[#404040] hover:text-white transition-colors"
-                          >
-                            <ExternalLink className="w-3.5 h-3.5" />
-                          </a>
-                        </>
-                      )}
+                      <button className="bg-white text-black px-3 py-1 mr-2 rounded-full text-xs font-semibold hover:bg-[#e5e5e5] transition-colors border-glow shrink-0">
+                        Open Project
+                      </button>
+                      <a
+                        href={repo.githubUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        onClick={(e) => e.stopPropagation()}
+                        className="p-1.5 rounded-md hover:bg-[#1a1a1a] text-[#404040] hover:text-white transition-colors"
+                      >
+                        <ExternalLink className="w-3.5 h-3.5" />
+                      </a>
                       <button
                         onClick={(e) => handleDelete(repo._id, e)}
                         className="p-1.5 rounded-md hover:bg-[#1a1a1a] text-[#404040] hover:text-[#ef4444] transition-colors cursor-pointer"

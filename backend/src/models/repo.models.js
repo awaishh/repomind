@@ -50,12 +50,10 @@ const repoSchema = new mongoose.Schema(
     },
     ragStatus: {
       type: String,
-      enum: ["not_started", "processing", "ready", "error"],
       default: "not_started",
     },
     status: {
       type: String,
-      enum: ["fetching", "parsing", "processing", "linked", "ready", "error", "archived"],
       default: "fetching",
     },
     errorMessage: {

@@ -41,26 +41,25 @@ export const cloneAndProcess = asyncHandler(async (req, res) => {
       .json(new ApiResponse(200, { _id: existing._id, repoId: existing._id, status: "ready" }, "Repo already processed"));
   }
 
-  // Create a lightweight repository record; no local clone or RAG work runs here.
+  // Create repository record with ready status immediately
   const repo = existing || await Repo.create({
     user: userId,
     githubUrl,
     name,
     owner,
-    status: "fetching",
+    status: "ready",
   });
 
   if (existing) {
-    repo.status = "fetching";
-    repo.ragStatus = "not_started";
+    repo.status = "ready";
     repo.errorMessage = "";
     await repo.save();
   }
 
-  // Return immediately — processing happens in background
+  // Return immediately
   res
-    .status(202)
-    .json(new ApiResponse(202, { _id: repo._id, repoId: repo._id, status: "fetching" }, "Repository details fetch started"));
+    .status(200)
+    .json(new ApiResponse(200, { _id: repo._id, repoId: repo._id, status: "ready" }, "Repository linked successfully"));
 
   // ---- Background processing ----
   try {
@@ -69,9 +68,6 @@ export const cloneAndProcess = asyncHandler(async (req, res) => {
     repo.description = meta.description || "";
     repo.language = meta.language || "JavaScript";
     repo.stars = meta.stars || 0;
-
-    repo.status = "parsing";
-    await repo.save();
 
     // 2. Fetch the file tree.
     const branch = meta.defaultBranch || "main";

@@ -10,8 +10,13 @@ import { AUTH_PATTERNS } from "../constants.js";
 export async function searchChunks(repoId, query, options = {}) {
   const { scopedFiles = [], topK = 8, biasAuth = false } = options;
 
-  // Generate query embedding
-  const queryEmbedding = await generateEmbedding(query);
+  // Generate query embedding with fallback
+  let queryEmbedding = null;
+  try {
+    queryEmbedding = await generateEmbedding(query);
+  } catch (err) {
+    console.warn("Embedding generation unavailable/rate-limited, using text keyword matching fallback:", err.message);
+  }
 
   // Build the vector search pipeline
   const pipeline = [];
@@ -56,31 +61,25 @@ export async function searchChunks(repoId, query, options = {}) {
     console.warn("Atlas Vector Search not available, falling back to manual search:", err.message);
   }
 
-  // Fallback: manual cosine similarity (for when Atlas Vector Search index isn't set up)
-  const filter = { repo: repoId, embedding: { $exists: true, $ne: [] } };
+  // Fallback: manual cosine similarity or keyword text match
+  const filter = { repo: repoId };
   if (scopedFiles.length > 0) {
     filter.filePath = { $in: scopedFiles };
   }
 
   let chunks = await Chunk.find(filter).lean();
+  const keywords = query.toLowerCase().split(/\s+/).filter(Boolean);
 
-  // If biasing for auth, boost auth-related files
-  if (biasAuth) {
-    chunks = chunks.map((chunk) => {
-      const isAuth = AUTH_PATTERNS.some((p) =>
-        chunk.filePath.toLowerCase().includes(p)
-      );
-      return { ...chunk, authBoost: isAuth ? 0.1 : 0 };
-    });
-  }
-
-  // Compute cosine similarity manually
   const scored = chunks.map((chunk) => {
-    const sim = cosineSimilarity(queryEmbedding, chunk.embedding);
-    return {
-      ...chunk,
-      score: sim + (chunk.authBoost || 0),
-    };
+    let score = 0;
+    if (queryEmbedding && chunk.embedding?.length) {
+      score = cosineSimilarity(queryEmbedding, chunk.embedding);
+    } else {
+      // Keyword occurrence score
+      const text = (chunk.filePath + " " + chunk.content).toLowerCase();
+      score = keywords.reduce((acc, kw) => acc + (text.includes(kw) ? 0.2 : 0), 0);
+    }
+    return { ...chunk, score };
   });
 
   scored.sort((a, b) => b.score - a.score);

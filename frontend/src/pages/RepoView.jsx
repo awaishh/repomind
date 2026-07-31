@@ -101,7 +101,7 @@ export default function RepoView({ theme, setTheme }) {
 
           <div className="flex items-center gap-3">
             {/* View toggle floating pill */}
-            <div className="flex items-center bg-[#f1f5f9] border border-[#e2e8f0] rounded-full p-1 shadow-sm">
+            <div className="flex items-center bg-[#f1f5f9] border border-[#e2e8f0] rounded-full p-1 shadow-sm h-9">
               {[
                 { key: "canvas", icon: FolderTree, label: "Canvas view" },
                 { key: "split", icon: PanelRightOpen, label: "Canvas + Q&A split" },
@@ -115,13 +115,13 @@ export default function RepoView({ theme, setTheme }) {
                       <button
                         onClick={() => setActivePanel(key)}
                         className={cn(
-                          "p-2 rounded-full transition-all duration-200 flex items-center justify-center cursor-pointer",
+                          "w-7 h-7 rounded-full transition-all duration-200 flex items-center justify-center cursor-pointer",
                           isActive
-                            ? "bg-blue-600 text-white shadow-md shadow-blue-500/25 scale-105"
+                            ? "bg-blue-600 text-white shadow-sm shadow-blue-500/30"
                             : "text-[#64748b] hover:text-[#0f172a] hover:bg-white/60"
                         )}
                       >
-                        <Icon className="w-4 h-4" />
+                        <Icon className={cn("w-3.5 h-3.5", isActive ? "text-white stroke-[2.2]" : "stroke-[1.8]")} />
                       </button>
                     </TooltipTrigger>
                     <TooltipContent side="bottom">{label}</TooltipContent>
@@ -129,7 +129,7 @@ export default function RepoView({ theme, setTheme }) {
                 );
               })}
 
-              <div className="w-px h-4 bg-[#cbd5e1] mx-1" />
+              <div className="w-px h-3.5 bg-[#cbd5e1] mx-1" />
 
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -137,9 +137,9 @@ export default function RepoView({ theme, setTheme }) {
                     href={currentRepo.githubUrl}
                     target="_blank"
                     rel="noreferrer"
-                    className="p-2 rounded-full text-[#64748b] hover:text-[#0f172a] hover:bg-white/60 transition-all duration-200 flex items-center justify-center"
+                    className="w-7 h-7 rounded-full text-[#64748b] hover:text-[#0f172a] hover:bg-white/60 transition-all duration-200 flex items-center justify-center"
                   >
-                    <ExternalLink className="w-4 h-4" />
+                    <ExternalLink className="w-3.5 h-3.5 stroke-[1.8]" />
                   </a>
                 </TooltipTrigger>
                 <TooltipContent side="bottom">Open GitHub Repository</TooltipContent>

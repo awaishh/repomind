@@ -112,7 +112,7 @@ export default function LoginPage() {
         </div>
 
         {/* bottom spacer */}
-        <div className="text-xs text-[#333] font-mono">© 2025 RepoMind</div>
+        <div className="text-xs text-[#333] font-mono">© RepoMind</div>
       </div>
 
       {/* ── RIGHT: Grid decorative panel ──────────────── */}
@@ -143,7 +143,7 @@ export default function LoginPage() {
         </div>
 
         <div className="absolute bottom-8 right-8 text-[10px] text-[#1f1f1f] font-mono uppercase tracking-widest">
-          RAG · Gemini · Vector Search
+          RAG · Codebase AI · Vector Search
         </div>
       </div>
     </div>

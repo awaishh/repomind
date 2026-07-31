@@ -7,9 +7,10 @@ import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import Dashboard from "./pages/Dashboard";
 import RepoView from "./pages/RepoView";
-import CodeEditorPage from "./pages/CodeEditorPage";
+import CommitPage from "./pages/CommitPage";
+import MeetingPage from "./pages/MeetingPage";
+import QnaPage from "./pages/QnaPage";
 import { Loader2 } from "lucide-react";
-import { useTheme } from "./lib/theme";
 
 // Protected Route wrapper
 function ProtectedRoute({ children }) {
@@ -43,10 +44,10 @@ function PublicRoute({ children }) {
 
 function App() {
   const checkAuth = useAuthStore((s) => s.checkAuth);
-  const [theme, setTheme] = useTheme();
-
   useEffect(() => {
     checkAuth();
+    document.documentElement.dataset.theme = "light";
+    document.documentElement.style.colorScheme = "light";
   }, [checkAuth]);
 
   return (
@@ -66,7 +67,7 @@ function App() {
       <Routes>
         <Route
           path="/"
-          element={<LandingPage theme={theme} setTheme={setTheme} />}
+          element={<LandingPage />}
         />
         <Route
           path="/login"
@@ -88,7 +89,7 @@ function App() {
           path="/dashboard"
           element={
             <ProtectedRoute>
-              <Dashboard theme={theme} setTheme={setTheme} />
+              <Dashboard />
             </ProtectedRoute>
           }
         />
@@ -96,15 +97,31 @@ function App() {
           path="/repo/:repoId"
           element={
             <ProtectedRoute>
-              <RepoView theme={theme} setTheme={setTheme} />
+              <RepoView />
             </ProtectedRoute>
           }
         />
         <Route
-          path="/editor/:repoId?"
+          path="/commits"
           element={
             <ProtectedRoute>
-              <CodeEditorPage theme={theme} setTheme={setTheme} />
+              <CommitPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/meetings"
+          element={
+            <ProtectedRoute>
+              <MeetingPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/qna"
+          element={
+            <ProtectedRoute>
+              <QnaPage />
             </ProtectedRoute>
           }
         />

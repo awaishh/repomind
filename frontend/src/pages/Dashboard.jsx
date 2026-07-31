@@ -11,19 +11,18 @@ import {
   ExternalLink,
   FolderGit2,
   ArrowRight,
-  Clock,
   Code2,
   X,
 } from "lucide-react";
 import toast from "react-hot-toast";
-import ThemeToggle from "@/components/ThemeToggle";
+import AppSidebar from "@/components/AppSidebar";
 
 const STATUS_MAP = {
-  cloning: { label: "Cloning…", color: "text-[#737373]", dot: "bg-[#737373]" },
-  parsing: { label: "Parsing…", color: "text-[#a3a3a3]", dot: "bg-[#a3a3a3]" },
-  embedding: { label: "Embedding…", color: "text-[#d4d4d4]", dot: "bg-[#d4d4d4]" },
-  ready: { label: "Ready", color: "text-white", dot: "bg-white" },
-  error: { label: "Error", color: "text-[#ef4444]", dot: "bg-[#ef4444]" },
+  fetching: { label: "Fetching…", color: "text-blue-500", dot: "bg-blue-500" },
+  parsing: { label: "Parsing…", color: "text-blue-400", dot: "bg-blue-400" },
+  ready: { label: "Ready", color: "text-green-600", dot: "bg-green-500" },
+  error: { label: "Error", color: "text-red-500", dot: "bg-red-500" },
+  archived: { label: "Archived", color: "text-[#9aa3b2]", dot: "bg-[#9aa3b2]" },
 };
 
 export default function Dashboard({ theme, setTheme }) {
@@ -74,7 +73,7 @@ export default function Dashboard({ theme, setTheme }) {
     try {
       const data = await cloneRepo(githubUrl.trim());
       setProcessingRepoId(data.repoId);
-      setProcessingStatus("cloning");
+      setProcessingStatus("fetching");
       setGithubUrl("");
     } catch (err) {
       toast.error(err.response?.data?.message || "Clone failed");
@@ -98,14 +97,13 @@ export default function Dashboard({ theme, setTheme }) {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white">
+    <div className="app-page min-h-screen bg-white text-[#182133]">
 
       {/* ── Nav ─────────────────────────────────────────── */}
-      <header className="fixed top-0 left-0 right-0 z-40 glass-subtle">
-        <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
-          <span className="font-sketch text-2xl text-white">RepoMind</span>
+      <header className="fixed top-0 left-0 right-0 z-40 h-16 border-b border-[#e4e9f1] bg-white/95 backdrop-blur">
+        <div className="mx-auto flex h-full max-w-[1440px] items-center justify-between px-6">
+          <span className="brand-wordmark text-[#182133]">RepoMind</span>
           <div className="flex items-center gap-4">
-            <ThemeToggle theme={theme} setTheme={setTheme} />
             <div className="flex items-center gap-2">
               <div className="w-7 h-7 rounded-full bg-[#1a1a1a] border border-[#262626] flex items-center justify-center text-xs font-medium text-[#737373]">
                 {user?.username?.[0]?.toUpperCase()}
@@ -122,8 +120,10 @@ export default function Dashboard({ theme, setTheme }) {
         </div>
       </header>
 
+      <AppSidebar active="repositories" repos={repos} navigate={navigate} />
+
       {/* ── Main ────────────────────────────────────────── */}
-      <main className="pt-24 pb-20 px-6 max-w-6xl mx-auto">
+      <main className="mx-auto max-w-6xl px-6 pb-20 pt-24 md:ml-64 md:pl-8">
 
         {/* Hero */}
         <div className="mb-12 animate-slide-up">
@@ -131,7 +131,7 @@ export default function Dashboard({ theme, setTheme }) {
             Your Repositories
           </h1>
           <p className="text-[#737373] max-w-lg">
-            Clone a GitHub repo and start asking questions. AI reads every file.
+            Link a GitHub repo to inspect commits. Q&A reads code only when you ask.
           </p>
         </div>
 
@@ -142,15 +142,8 @@ export default function Dashboard({ theme, setTheme }) {
             className="group flex items-center gap-2 bg-white text-black px-5 py-2.5 rounded-full text-sm font-semibold hover:bg-[#e5e5e5] transition-all cursor-pointer"
           >
             <Plus className="w-4 h-4" />
-            Clone repo
+            Link repo
             <ArrowRight className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
-          </button>
-          <button
-            onClick={() => navigate("/editor")}
-            className="flex items-center gap-2 border border-[#1f1f1f] bg-[#111] px-5 py-2.5 rounded-full text-sm font-semibold text-[#d4d4d4] hover:border-[#333] hover:text-white transition-all cursor-pointer"
-          >
-            <Code2 className="w-4 h-4" />
-            Open editor
           </button>
           <span className="text-[#333] text-sm">{repos.length} {repos.length === 1 ? "repo" : "repos"}</span>
         </div>
@@ -164,13 +157,13 @@ export default function Dashboard({ theme, setTheme }) {
           <div className="border border-dashed border-[#1f1f1f] rounded-2xl p-16 text-center animate-fade-in">
             <FolderGit2 className="w-10 h-10 text-[#333] mx-auto mb-4" />
             <h3 className="font-sketch text-3xl text-[#404040] mb-2">No repos yet</h3>
-            <p className="text-sm text-[#333] mb-6">Clone a public GitHub repository to get started</p>
+            <p className="text-sm text-[#333] mb-6">Link a public GitHub repository to get started</p>
             <button
               onClick={() => setShowModal(true)}
               className="inline-flex items-center gap-2 bg-white text-black px-6 py-2.5 rounded-full text-sm font-semibold hover:bg-[#e5e5e5] transition-colors cursor-pointer"
             >
               <Plus className="w-4 h-4" />
-              Clone your first repo
+              Link your first repo
             </button>
           </div>
         ) : (
@@ -189,16 +182,15 @@ export default function Dashboard({ theme, setTheme }) {
                       <GitBranch className="w-4 h-4 text-[#404040] flex-shrink-0" />
                       <span className="font-medium text-white truncate">{repo.name}</span>
                     </div>
+
                     <div className="flex items-center gap-1 flex-shrink-0 ml-2">
                       {repo.status === "ready" && (
+                        <button className="bg-white text-black px-3 py-1 mr-2 rounded-full text-xs font-semibold hover:bg-[#e5e5e5] transition-colors border-glow shrink-0">
+                          Open Project
+                        </button>
+                      )}
+                      {repo.status === "ready" && (
                         <>
-                          <button
-                            onClick={(e) => { e.stopPropagation(); navigate(`/editor/${repo._id}`); }}
-                            className="p-1.5 rounded-md hover:bg-[#1a1a1a] text-[#404040] hover:text-white transition-colors"
-                            title="Open in editor"
-                          >
-                            <Code2 className="w-3.5 h-3.5" />
-                          </button>
                           <a
                             href={repo.githubUrl}
                             target="_blank"
@@ -264,8 +256,8 @@ export default function Dashboard({ theme, setTheme }) {
           <div className="relative z-10 w-full max-w-md glass rounded-2xl border border-[#1f1f1f] p-6 animate-slide-up border-glow">
             <div className="flex items-center justify-between mb-6">
               <div>
-                <h2 className="font-sketch text-2xl text-white">Clone Repository</h2>
-                <p className="text-xs text-[#737373] mt-0.5">Enter a public GitHub repository URL</p>
+                <h2 className="font-sketch text-2xl text-white">Link Repository</h2>
+                <p className="text-xs text-[#737373] mt-0.5">Enter a public or private GitHub repository URL</p>
               </div>
               {!processingRepoId && (
                 <button
@@ -297,8 +289,8 @@ export default function Dashboard({ theme, setTheme }) {
 
                 {/* progress steps */}
                 <div className="flex items-center justify-center gap-2">
-                  {["cloning", "parsing", "embedding"].map((step, idx) => {
-                    const steps = ["cloning", "parsing", "embedding"];
+                  {["fetching", "parsing", "ready"].map((step, idx) => {
+                    const steps = ["fetching", "parsing", "ready"];
                     const currentIdx = steps.indexOf(processingStatus);
                     return (
                       <div
@@ -337,7 +329,7 @@ export default function Dashboard({ theme, setTheme }) {
                     {cloning ? (
                       <><Loader2 className="w-4 h-4 animate-spin" />Starting…</>
                     ) : (
-                      <><GitBranch className="w-4 h-4" />Clone & Analyze</>
+                      <><GitBranch className="w-4 h-4" />Link repository</>
                     )}
                   </button>
                 </div>

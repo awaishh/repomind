@@ -1,12 +1,11 @@
 import { useNavigate } from "react-router-dom";
 import { GitBranch, MessageSquare, Layers, ArrowRight, Zap, Search, Code2 } from "lucide-react";
-import ThemeToggle from "@/components/ThemeToggle";
 
 const FEATURES = [
   {
     icon: GitBranch,
-    title: "Clone any repo",
-    desc: "Paste a GitHub URL and we'll clone, parse, and index it in minutes.",
+    title: "Link any repo",
+    desc: "Paste a GitHub URL and we'll connect, parse, and index it in minutes.",
   },
   {
     icon: Layers,
@@ -26,7 +25,7 @@ const FEATURES = [
   {
     icon: Zap,
     title: "Instant embeddings",
-    desc: "Every chunk is vectorised with Gemini text-embedding-004 for accuracy.",
+    desc: "Every chunk is vectorized into semantic embeddings for precision.",
   },
   {
     icon: Code2,
@@ -52,7 +51,6 @@ export default function LandingPage({ theme, setTheme }) {
         <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
           <span className="font-sketch text-2xl text-white tracking-wide">RepoMind</span>
           <div className="flex items-center gap-3">
-            <ThemeToggle theme={theme} setTheme={setTheme} />
             <button
               onClick={() => navigate("/login")}
               className="text-sm text-[#737373] hover:text-white transition-colors px-3 py-1.5 cursor-pointer"
@@ -89,7 +87,7 @@ export default function LandingPage({ theme, setTheme }) {
             style={{ animationDelay: "0.1s" }}
           >
             <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse-slow" />
-            RAG-powered code intelligence
+            AI-powered code intelligence
           </div>
 
           {/* headline */}
@@ -108,7 +106,7 @@ export default function LandingPage({ theme, setTheme }) {
             className="text-lg text-[#737373] max-w-xl mx-auto mb-10 leading-relaxed animate-slide-up"
             style={{ animationDelay: "0.35s" }}
           >
-            Clone a GitHub repo, explore the file tree visually, and chat with an AI
+            Link a GitHub repo, explore the file tree visually, and chat with an AI
             that has actually read every line of code.
           </p>
 
@@ -308,9 +306,9 @@ export default function LandingPage({ theme, setTheme }) {
 
           <div className="space-y-6">
             {[
-              { n: "01", title: "Paste a GitHub URL", body: "Enter any public repository URL. We clone it, walk every file, and chunk the code into semantic pieces." },
-              { n: "02", title: "AI indexes the code", body: "Every chunk gets embedded with Gemini text-embedding-004 and stored as a vector for lightning-fast semantic search." },
-              { n: "03", title: "Ask your questions", body: "Your question triggers a retrieval pass — the most relevant chunks are fetched and fed to Gemini for a grounded, accurate answer." },
+              { n: "01", title: "Paste a GitHub URL", body: "Enter any public repository URL. We link it, walk every file, and chunk the code into semantic pieces." },
+              { n: "02", title: "AI indexes the code", body: "Every chunk is vectorized into semantic embeddings and stored for lightning-fast semantic search." },
+              { n: "03", title: "Ask your questions", body: "Your question triggers a retrieval pass — the most relevant chunks are fetched and fed to the AI for a grounded, accurate answer." },
             ].map(({ n, title, body }) => (
               <div key={n} className="flex gap-6 glass rounded-xl p-6 border-[#1a1a1a] hover:border-[#2a2a2a] transition-all">
                 <span className="font-sketch text-4xl text-[#333] flex-shrink-0 leading-none">{n}</span>
@@ -347,7 +345,7 @@ export default function LandingPage({ theme, setTheme }) {
       <footer className="border-t border-[#1a1a1a] py-8 px-6">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
           <span className="font-sketch text-xl text-[#404040]">RepoMind</span>
-          <p className="text-xs text-[#333]">Built with Gemini · Tailwind · React</p>
+         
         </div>
       </footer>
     </div>

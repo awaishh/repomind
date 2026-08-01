@@ -11,18 +11,18 @@ The platform employs a decoupled architectural model separating repository metad
 ### Decoupled Repository Linking and Lazy RAG
 Standard code intelligence platforms often execute blocking repository parsing and embedding generation upon initial import, causing severe latency and unnecessary API consumption. RepoMind solves this through a lightweight metadata synchronization layer. Repository structures, branch trees, and metadata are indexed immediately. Full source code chunking and vector embedding generation are deferred until a user initializes a repository Q&A workspace.
 
-### High-Performance RAG Pipeline
-RepoMind utilizes a multi-tier Retrieval-Augmented Generation pipeline:
-1. AST-Aware Code Chunking: Source files are segmented into logical structural blocks preserving file paths and line ranges.
-2. Vector Indexing: Code chunks are embedded into dense vector space using a 768-dimensional embedding model stored within a MongoDB vector search collection.
-3. Hybrid Retrieval: User queries execute cosine similarity matching against embedded chunks, supplemented by a secondary structural keyword matching fallback.
-4. Contextual Generation: Relevant context snippets are framed within deterministic system prompts to provide precise code answers with source location references.
+### High-Performance Gemini RAG Pipeline
+RepoMind utilizes a multi-tier Retrieval-Augmented Generation pipeline powered by Google Gemini:
+1. **AST-Aware Code Chunking**: Source files are segmented into logical structural blocks preserving file paths and line ranges.
+2. **Vector Indexing**: Code chunks are embedded into dense vector space using a 768-dimensional embedding model stored within a MongoDB Atlas Vector Search collection.
+3. **Hybrid Retrieval**: User queries execute cosine similarity matching against embedded chunks, supplemented by a secondary structural keyword matching fallback.
+4. **Contextual Generation**: Relevant context snippets are framed within deterministic system prompts and sent to **Gemini**, providing precise code answers with source location references.
 
 ### Git Diff Intelligence Engine
-The Commit Reader workspace fetches repository commit logs and isolates file diffs. It runs automated change analysis to produce concise change summaries, key impact areas, and developer refactoring insights across commit histories.
+The Commit Reader workspace fetches repository commit logs and isolates file diffs. It leverages Gemini to run automated change analysis, producing concise change summaries, key impact areas, and developer refactoring insights across commit histories.
 
-### Asynchronous Meeting Intelligence
-The Meeting Room module processes technical discussions and standup audio recordings using AssemblyAI. It executes speaker diarization, auto-chaptering, and NLP topic segmentation, generating:
+### Asynchronous Meeting Intelligence (Powered by AssemblyAI)
+The Meeting Room module processes technical discussions and standup audio recordings using **AssemblyAI**. It executes speaker diarization, auto-chaptering, and NLP topic segmentation, generating:
 - Full audio transcripts with timestamps
 - Key technical headings & topic titles
 - Action items, identified project blockers & issues
@@ -32,11 +32,11 @@ The Meeting Room module processes technical discussions and standup audio record
 
 ## Key Features
 
-- Contextual Code Q&A: Natural language chat interface with vector-driven context retrieval referencing exact code files and line numbers.
-- Git Diff Analyzer: Automated commit diff parsing providing commit-level change breakdowns.
-- AssemblyAI Meeting Intelligence: Speech-to-text processing for development syncs, producing structured summaries, transcripts, and technical key takeaways.
-- Workspace Collaboration: User invitation workflows and shared repository workspace management.
-- Modern Responsive Design System: Accessible light-themed user interface focused on technical readability and clean typography.
+- **Contextual Code Q&A**: Natural language chat interface with vector-driven context retrieval referencing exact code files and line numbers.
+- **Git Diff Analyzer**: Automated commit diff parsing providing commit-level change breakdowns.
+- **AssemblyAI Meeting Intelligence**: Speech-to-text processing for development syncs, producing structured summaries, transcripts, and technical key takeaways.
+- **Workspace Collaboration**: User invitation workflows and shared repository workspace management.
+- **Modern Responsive Design System**: Accessible light-themed user interface focused on technical readability and clean typography.
 
 ---
 
@@ -49,8 +49,8 @@ The Meeting Room module processes technical discussions and standup audio record
 [ Backend: Node.js / Express ]
       |        |        |               |
       v        v        v               v
- [MongoDB]  [Vector] [Local AI / RAG] [AssemblyAI Audio]
- (Storage)  (Search) (Inference Engine) (Transcription)
+ [MongoDB]  [Vector] [Gemini LLM]    [AssemblyAI Audio]
+ (Atlas)    (Search) (RAG Inference) (Transcription)
 ```
 
 ---
@@ -58,18 +58,19 @@ The Meeting Room module processes technical discussions and standup audio record
 ## Technology Stack
 
 ### Frontend
-- Framework: React 18
-- Build Tool: Vite
-- Styling: Custom CSS Design System
-- Icons: Lucide React
+- **Framework**: React 18
+- **Build Tool**: Vite
+- **Styling**: Custom CSS Design System
+- **Icons**: Lucide React
 
 ### Backend
-- Runtime: Node.js (ES Modules)
-- Framework: Express.js
-- Database: MongoDB with Mongoose ODM
-- Vector Search: MongoDB Vector Index / Cosine Similarity Engine
-- Audio Speech-to-Text: AssemblyAI API SDK
-- File Uploads: Multer
+- **Runtime**: Node.js (ES Modules)
+- **Framework**: Express.js
+- **Database**: MongoDB Atlas with Mongoose ODM
+- **Vector Search**: MongoDB Atlas Vector Index / Cosine Similarity Engine
+- **AI Inference**: Google Gemini API
+- **Audio Speech-to-Text**: AssemblyAI API SDK
+- **File Uploads**: Multer
 
 ---
 
@@ -78,7 +79,7 @@ The Meeting Room module processes technical discussions and standup audio record
 ### Prerequisites
 - Node.js (v18.x or higher)
 - npm (v9.x or higher)
-- MongoDB Instance (Local MongoDB Community Server or MongoDB Atlas cluster)
+- MongoDB Atlas cluster (with Vector Search enabled)
 
 ---
 
@@ -99,8 +100,8 @@ Create a `.env` file inside the `backend` directory:
 PORT=8000
 CORS_ORIGIN=http://localhost:5173
 
-# Database Configuration
-MONGO_URI=mongodb://localhost:27017/repomind
+# Database Configuration (MongoDB Atlas)
+MONGO_URI=mongodb+srv://<username>:<password>@<cluster>.mongodb.net/repomind
 
 # Authentication
 ACCESS_TOKEN_SECRET=your_access_token_secret_here
@@ -110,10 +111,11 @@ REFRESH_TOKEN_EXPIRY=7d
 JWT_SECRET=your_jwt_secret_here
 TOKEN_ENCRYPTION_KEY=your_encryption_key_here
 
-# Speech-to-Text API
+# AI & Speech APIs
+GEMINI_API_KEY=your_gemini_api_key_here
 ASSEMBLYAI_API_KEY=your_assemblyai_api_key_here
 
-# Database Reset Command (Optional)
+# Optional: Database Reset Command
 # npm run reset-db
 ```
 
@@ -155,7 +157,7 @@ The frontend application will be accessible at `http://localhost:5173` and the A
 
 ## Database Indexing & Vector Search Setup
 
-If using MongoDB Atlas Vector Search, apply the following index definition on the `chunks` collection:
+To enable the RAG Q&A feature, apply the following index definition on your `chunks` collection within MongoDB Atlas Vector Search:
 
 ```json
 {
@@ -189,18 +191,18 @@ If using MongoDB Atlas Vector Search, apply the following index definition on th
 
 ### Repository Management
 - `GET /api/v1/repos` - List linked repositories
-- `POST /api/v1/repos/link` - Link repository via URL or path
+- `POST /api/v1/repos/link` - Link repository via URL
 - `GET /api/v1/repos/:id` - Fetch repository metadata and file tree
 
 ### Q&A & Retrieval
-- `POST /api/v1/qa/ask` - Execute contextual natural language query against repository
+- `POST /api/v1/qa/ask` - Execute contextual natural language query via Gemini
 
 ### Git Commit Analysis
 - `GET /api/v1/commits/:repoId` - Fetch commit log and file diffs
-- `POST /api/v1/commits/summarize` - Summarize commit diff
+- `POST /api/v1/commits/summarize` - Summarize commit diff via Gemini
 
 ### Meeting Analysis
-- `POST /api/v1/meetings/upload/:repoId` - Upload audio recording for analysis
+- `POST /api/v1/meetings/upload/:repoId` - Upload audio recording to AssemblyAI
 - `GET /api/v1/meetings/:repoId` - Retrieve meeting summaries and transcripts
 
 ---
@@ -208,3 +210,7 @@ If using MongoDB Atlas Vector Search, apply the following index definition on th
 ## License
 
 This project is licensed under the MIT License.
+
+---
+
+Built with ❤️ by Awaish

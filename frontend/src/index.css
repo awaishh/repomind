@@ -394,13 +394,8 @@
   background-color: #ffffff !important;
 }
 
-[data-theme="light"] button[class~="bg-white"],
-[data-theme="light"] a[class~="bg-white"] {
-  background-color: #2563eb !important;
-}
-
 [data-theme="light"] [class~="bg-white"][class~="text-black"] {
-  color: #ffffff !important;
+  color: #0f172a !important;
 }
 
 [data-theme="light"] [class~="hover:bg-[#111]"]:hover,
@@ -408,11 +403,6 @@
 [data-theme="light"] [class~="hover:bg-[#1a1a1a]"]:hover,
 [data-theme="light"] [class~="hover:bg-[#e5e5e5]"]:hover {
   background-color: #eff6ff !important;
-}
-
-[data-theme="light"] button[class~="bg-white"][class~="hover:bg-[#e5e5e5]"]:hover,
-[data-theme="light"] a[class~="bg-white"][class~="hover:bg-[#e5e5e5]"]:hover {
-  background-color: #1d4ed8 !important;
 }
 
 [data-theme="light"] [class~="hover:text-white"]:hover,

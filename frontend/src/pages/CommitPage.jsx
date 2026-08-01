@@ -70,6 +70,7 @@ export default function CommitPage({ theme, setTheme }) {
     const [workspaces, setWorkspaces] = useState([]);
     const [syncing, setSyncing] = useState(false);
     const [loading, setLoading] = useState(true);
+    const [fetchAll, setFetchAll] = useState(false);
 
     const loadWorkspaces = async () => {
         try {
@@ -91,7 +92,7 @@ export default function CommitPage({ theme, setTheme }) {
         if (!githubUrl.trim()) return;
         setSyncing(true);
         try {
-            const response = await api.post("/commits/sync", { githubUrl: githubUrl.trim() });
+            const response = await api.post("/commits/sync", { githubUrl: githubUrl.trim(), fetchAll });
             const saved = response.data.data;
             setWorkspaces((current) => [saved, ...current.filter((item) => item._id !== saved._id)]);
             setGithubUrl("");
@@ -145,6 +146,12 @@ export default function CommitPage({ theme, setTheme }) {
                             {syncing ? "Fetching…" : "Fetch commits"}
                         </button>
                     </div>
+                    
+                    <label className="mt-4 flex items-center gap-2 cursor-pointer w-fit group">
+                        <input type="checkbox" checked={fetchAll} onChange={(e) => setFetchAll(e.target.checked)} className="h-4 w-4 rounded border-[#d8e0eb] text-blue-600 focus:ring-blue-500 cursor-pointer" disabled={syncing} />
+                        <span className="text-sm font-medium text-[#3c4257] group-hover:text-[#182133] transition-colors">Fetch extended commit history (up to 30 commits)</span>
+                    </label>
+
                     <p className="mt-3 text-[11px] text-[#8a94a5]">Fetch recent changes, read the full diff, and keep a concise summary for each commit.</p>
                 </form>
 

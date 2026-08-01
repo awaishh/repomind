@@ -140,7 +140,7 @@ export async function summarizeOllamaCommit(diffContent) {
  */
 export async function summarizeOllamaCommitBatch(commits) {
   const summaries = [];
-  for (const c of commits.slice(0, 5)) {
+  for (const c of commits) {
     const sum = await summarizeOllamaCommit(c.diff || c.message);
     summaries.push(sum);
   }

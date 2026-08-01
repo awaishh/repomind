@@ -146,15 +146,10 @@ export async function summarizeCommitBatch(commits) {
   if (process.env.USE_OLLAMA === "true") {
     return await summarizeOllamaCommitBatch(commits);
   }
-  const diffText = commits.slice(0, 3)
-    .map((c, i) => `[${i}] SHA: ${c.sha}\nMSG: ${c.message}\nDIFF: ${c.diff.slice(0, 500)}`)
-    .join("\n\n");
-  const prompt = `Return a JSON array of max 3 short strings summarizing each commit:\n${diffText}`;
-  const response = await generateContent([{ role: "user", parts: [{ text: prompt }] }], 150);
-  try {
-    const parsed = JSON.parse(response.match(/\[[\s\S]*\]/)?.[0] || "[]");
-    return Array.isArray(parsed) ? parsed.map((item) => String(item)) : [];
-  } catch {
-    return [];
+  const summaries = [];
+  for (const c of commits) {
+    const sum = await summarizeCommit(c.diff || c.message);
+    summaries.push(sum);
   }
+  return summaries;
 }

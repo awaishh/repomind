@@ -15,8 +15,11 @@ export const syncCommits = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Enter a valid GitHub repository URL");
     }
 
+    const fetchAll = req.body.fetchAll === true;
+    const maxLimit = fetchAll ? 30 : 5;
+
     const { owner, name } = parseGithubUrl(githubUrl);
-    const commits = (await fetchCommits(owner, name)).slice(0, MAX_COMMITS);
+    const commits = (await fetchCommits(owner, name)).slice(0, maxLimit);
     const commitItems = [];
 
     for (const commit of commits) {

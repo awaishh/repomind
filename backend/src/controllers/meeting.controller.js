@@ -44,9 +44,6 @@ export const uploadMeeting = asyncHandler(async (req, res) => {
           audio: file.path,
           speaker_labels: true,
           auto_chapters: true,
-          summarization: true,
-          summary_model: "informative",
-          summary_type: "bullets",
         });
 
         if (transcript.status === "error") throw new Error(transcript.error || "AssemblyAI transcription failed");
@@ -73,40 +70,16 @@ export const uploadMeeting = asyncHandler(async (req, res) => {
         meeting.chapters = chapters;
         meeting.status = "done";
       } else {
-        // Fallback analysis when API key is not set
-        await new Promise((r) => setTimeout(r, 2500)); // Simulate audio processing delay
-        const cleanName = (file.originalname || file.filename || "recording").replace(/\.[^/.]+$/, "");
-        meeting.heading = `Sync & Technical Review — ${cleanName}`;
-        meeting.issues = [
-          "Optimizing API rate limits and free-tier token usage",
-          "Decoupling repository metadata fetching from RAG vector indexing",
-          "Ensuring responsive frontend UI/UX across all device sizes"
-        ];
-        meeting.summary = "The team reviewed the core platform architecture. Key decisions include using lazy RAG indexing to prevent quota exhaustion, standardizing the Dionysus light theme, and optimizing backend response caching for fast Q&A performance.";
-        meeting.transcript = `[00:00] Speaker 1: Welcome everyone. Today we're reviewing the platform architecture and user experience.
-[00:15] Speaker 2: We've decoupled GitHub repository linking from heavy RAG embedding generation. Linking now finishes in under 2 seconds.
-[00:35] Speaker 3: Excellent. Q&A indexing will happen lazily on the first user query, preserving API quotas.
-[00:50] Speaker 1: Also, meeting audio recordings uploaded here get automatically transcribed with headings, key issues, and summaries.
-[01:10] Speaker 2: All frontend pages are unified under a clean light theme. Everything looks great!`;
-        meeting.status = "done";
+        throw new Error("AssemblyAI API key is missing. Please add ASSEMBLYAI_API_KEY to your .env file to enable transcription.");
       }
       await meeting.save();
     } catch (error) {
-      console.warn("AssemblyAI transcription failed, using fallback audio analysis:", error.message);
-      const cleanName = (file.originalname || file.filename || "recording").replace(/\.[^/.]+$/, "");
-      meeting.heading = `Sync & Technical Review — ${cleanName}`;
-      meeting.issues = [
-        "Optimizing local model inference and embedding pipelines",
-        "Decoupling repository metadata fetching from local vector indexing",
-        "Ensuring responsive frontend UI/UX across all device sizes"
-      ];
-      meeting.summary = "The team reviewed the core platform architecture. Key decisions include using local Ollama models (nomic-embed-text & qwen2.5-coder) to eliminate third-party API quotas, standardizing the Dionysus light theme, and optimizing backend response caching for fast Q&A performance.";
-      meeting.transcript = `[00:00] Speaker 1: Welcome everyone. Today we're reviewing the platform architecture and user experience.
-[00:15] Speaker 2: We've decoupled GitHub repository linking from heavy vector embedding generation. Linking now finishes in under 2 seconds.
-[00:35] Speaker 3: Excellent. Q&A indexing happens automatically via local Ollama models, preserving privacy and zero cost.
-[00:50] Speaker 1: Also, meeting audio recordings uploaded here get automatically transcribed with headings, key issues, and summaries.
-[01:10] Speaker 2: All frontend pages are unified under a clean light theme. Everything looks great!`;
-      meeting.status = "done";
+      console.warn("Meeting processing failed:", error.message);
+      meeting.heading = `Meeting Analysis Failed`;
+      meeting.issues = ["Transcription Error"];
+      meeting.summary = `Failed to process audio: ${error.message}`;
+      meeting.transcript = `Error: ${error.message}`;
+      meeting.status = "error";
       await meeting.save();
     } finally {
       try { fs.unlinkSync(file.path); } catch { }

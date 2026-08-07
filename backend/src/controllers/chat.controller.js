@@ -13,6 +13,7 @@ import { indexRepository } from "../services/indexing.service.js";
 export const sendMessage = asyncHandler(async (req, res) => {
   const { repoId, message, scopedFiles = [], chatId } = req.body;
   const userId = req.user._id;
+  
 
   if (!repoId || !message) {
     throw new ApiError(400, "repoId and message are required");

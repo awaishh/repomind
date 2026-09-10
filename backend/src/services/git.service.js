@@ -113,13 +113,31 @@ export async function fetchCommits(owner, repo) {
 
 export async function fetchCommitDiff(owner, repo, sha) {
   const octokit = getOctokit();
-  const { data } = await octokit.rest.repos.getCommit({
+  const { data } = await octokit.request("GET /repos/{owner}/{repo}/commits/{ref}", {
     owner,
     repo,
     ref: sha,
-    mediaType: {
-      format: "diff",
-    },
+    headers: { accept: "application/vnd.github.diff" },
   });
-  return data; // This returns the raw diff string
+  // Octokit normally returns the raw diff for the requested representation.
+  // Retain a safe patch fallback for clients/proxies that return commit JSON.
+  if (typeof data === "string") return data;
+  return (data.files || [])
+    .map((file) => `diff --git a/${file.previous_filename || file.filename} b/${file.filename}\n${file.patch || ""}`)
+    .join("\n");
+}
+
+/**
+ * Get only the file changes for one known commit. This is used by the manual
+ * sync flow to refresh RAG context without re-indexing the entire repository.
+ */
+export async function fetchCommitFiles(owner, repo, sha) {
+  const octokit = getOctokit();
+  const { data } = await octokit.rest.repos.getCommit({ owner, repo, ref: sha });
+  return (data.files || []).map((file) => ({
+    status: file.status,
+    path: file.filename,
+    previousPath: file.previous_filename || null,
+    sha: file.sha || null,
+  }));
 }

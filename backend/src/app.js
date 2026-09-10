@@ -14,6 +14,12 @@ app.use(express.urlencoded({ extended: true, limit: "16kb" }));
 app.use(express.static("public"));
 app.use(cookieParser());
 
+// Lets the frontend and developers distinguish a reachable API from a Vite
+// proxy failure before attempting an authenticated request.
+app.get("/api/v1/health", (req, res) => {
+  res.status(200).json({ success: true, service: "repomind-api" });
+});
+
 // Routes
 import authRoutes from "./routes/auth.routes.js";
 import repoRoutes from "./routes/repo.routes.js";

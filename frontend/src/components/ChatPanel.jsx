@@ -95,7 +95,7 @@ export default function ChatPanel({ repoId, scopedFiles }) {
     try {
       await sendMessage(repoId, text, scopedFiles, currentChat?._id);
       fetchChats(repoId);
-    } catch {}
+    } catch {} // eslint-disable-line no-empty
   };
 
   const handleKeyDown = (e) => {

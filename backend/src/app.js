@@ -27,6 +27,7 @@ import chatRoutes from "./routes/chat.routes.js";
 import meetingRoutes from "./routes/meeting.routes.js";
 import invitationRoutes from "./routes/invitations.routes.js";
 import commitRoutes from "./routes/commit.routes.js";
+import roomRoutes from "./routes/room.routes.js";
 
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/repo", repoRoutes);
@@ -34,6 +35,7 @@ app.use("/api/v1/chat", chatRoutes);
 app.use("/api/v1/meeting", meetingRoutes);
 app.use("/api/v1/invitations", invitationRoutes);
 app.use("/api/v1/commits", commitRoutes);
+app.use("/api/v1/rooms", roomRoutes);
 
 // Global error handler
 app.use((err, req, res, next) => {

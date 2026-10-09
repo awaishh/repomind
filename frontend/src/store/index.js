@@ -48,7 +48,7 @@ export const useAuthStore = create((set) => ({
   },
 }));
 
-export const useRepoStore = create((set, get) => ({
+export const useRepoStore = create((set) => ({
   repos: [],
   currentRepo: null,
   isLoading: false,
@@ -97,7 +97,7 @@ export const useRepoStore = create((set, get) => ({
   clearProcessingStatus: () => set({ processingStatus: null }),
 }));
 
-export const useChatStore = create((set, get) => ({
+export const useChatStore = create((set) => ({
   chats: [],
   currentChat: null,
   messages: [],
@@ -108,7 +108,7 @@ export const useChatStore = create((set, get) => ({
     try {
       const res = await api.get(`/chat/repo/${repoId}`);
       set({ chats: res.data.data });
-    } catch {}
+    } catch {} // eslint-disable-line no-empty
   },
 
   fetchChat: async (chatId) => {
@@ -172,6 +172,136 @@ export const useChatStore = create((set, get) => ({
       chats: state.chats.filter((c) => c._id !== chatId),
       currentChat: state.currentChat?._id === chatId ? null : state.currentChat,
       messages: state.currentChat?._id === chatId ? [] : state.messages,
+    }));
+  },
+}));
+
+export const useRoomStore = create((set, get) => ({
+  rooms: [],
+  activeRoom: null,
+  messages: [],
+  isLoadingRooms: false,
+  isLoadingMessages: false,
+  typingUsers: [],
+
+  fetchRooms: async () => {
+    set({ isLoadingRooms: true });
+    try {
+      const res = await api.get("/rooms");
+      const rooms = res.data.data || [];
+      set({ rooms, isLoadingRooms: false });
+      return rooms;
+    } catch {
+      set({ isLoadingRooms: false });
+      return [];
+    }
+  },
+
+  createRoom: async (roomData) => {
+    const res = await api.post("/rooms", roomData);
+    const newRoom = res.data.data;
+    set((state) => ({
+      rooms: [newRoom, ...state.rooms],
+      activeRoom: newRoom,
+      messages: [],
+    }));
+    return newRoom;
+  },
+
+  joinRoomByCode: async (code) => {
+    const res = await api.post("/rooms/join", { code });
+    const joinedRoom = res.data.data;
+    set((state) => {
+      const exists = state.rooms.some((r) => r._id === joinedRoom._id);
+      return {
+        rooms: exists
+          ? state.rooms.map((r) => (r._id === joinedRoom._id ? joinedRoom : r))
+          : [joinedRoom, ...state.rooms],
+        activeRoom: joinedRoom,
+      };
+    });
+    return joinedRoom;
+  },
+
+  fetchRoomPreview: async (code) => {
+    const res = await api.get(`/rooms/code/${code}`);
+    return res.data.data;
+  },
+
+  fetchRoom: async (roomId) => {
+    const res = await api.get(`/rooms/${roomId}`);
+    const room = res.data.data;
+    set({ activeRoom: room });
+    return room;
+  },
+
+  fetchMessages: async (roomId) => {
+    set({ isLoadingMessages: true });
+    try {
+      const res = await api.get(`/rooms/${roomId}/messages`);
+      const messages = res.data.data || [];
+      set({ messages, isLoadingMessages: false });
+      return messages;
+    } catch {
+      set({ isLoadingMessages: false });
+      return [];
+    }
+  },
+
+  setActiveRoom: (room) => {
+    set({ activeRoom: room, messages: [], typingUsers: [] });
+  },
+
+  addMessage: (message) => {
+    const { activeRoom, messages, rooms } = get();
+    if (!message || !message.room) return;
+
+    // Update rooms list last message
+    const updatedRooms = rooms.map((r) =>
+      r._id === message.room
+        ? {
+            ...r,
+            lastMessage: message,
+            updatedAt: message.createdAt || new Date().toISOString(),
+          }
+        : r
+    );
+
+    // If message is for currently active room, append it (deduplicating)
+    if (activeRoom && activeRoom._id === message.room) {
+      const exists = messages.some((m) => m._id === message._id);
+      if (!exists) {
+        set({
+          messages: [...messages, message],
+          rooms: updatedRooms,
+        });
+        return;
+      }
+    }
+
+    set({ rooms: updatedRooms });
+  },
+
+  setUserTyping: (user) => {
+    if (!user?._id) return;
+    set((state) => {
+      const filtered = state.typingUsers.filter((u) => u._id !== user._id);
+      return { typingUsers: [...filtered, user] };
+    });
+  },
+
+  removeUserTyping: (userId) => {
+    set((state) => ({
+      typingUsers: state.typingUsers.filter((u) => u._id !== userId),
+    }));
+  },
+
+  leaveRoom: async (roomId) => {
+    await api.post(`/rooms/${roomId}/leave`);
+    set((state) => ({
+      rooms: state.rooms.filter((r) => r._id !== roomId),
+      activeRoom: state.activeRoom?._id === roomId ? null : state.activeRoom,
+      messages: state.activeRoom?._id === roomId ? [] : state.messages,
     }));
   },
 }));

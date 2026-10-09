@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState } from "react";
 import { useRepoStore } from "@/store";
 import {
   Folder, FolderOpen, FileCode, FileText, FileJson,

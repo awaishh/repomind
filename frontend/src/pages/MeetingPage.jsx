@@ -58,7 +58,7 @@ function MeetingResult({ meeting }) {
     );
 }
 
-export default function MeetingPage({ theme, setTheme }) {
+export default function MeetingPage() {
     const navigate = useNavigate();
     const { repos, fetchRepos } = useRepoStore();
     const [meetings, setMeetings] = useState([]);

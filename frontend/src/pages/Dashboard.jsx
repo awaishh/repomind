@@ -27,7 +27,7 @@ const STATUS_MAP = {
   archived: { label: "Archived", color: "text-[#9aa3b2]", dot: "bg-[#9aa3b2]" },
 };
 
-export default function Dashboard({ theme, setTheme }) {
+export default function Dashboard() {
   const navigate = useNavigate();
   const { user, logout } = useAuthStore();
   const { repos, fetchRepos, cloneRepo, pollStatus, deleteRepo, isLoading } = useRepoStore();

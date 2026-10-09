@@ -8,20 +8,17 @@ import {
   ArrowLeft,
   GitBranch,
   Star,
-  FolderTree,
   MessageSquare,
   ExternalLink,
-  PanelRightOpen,
   Sparkles,
-  Code2,
   Users,
   Archive,
   MonitorPlay,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
-export default function RepoView({ theme, setTheme }) {
+export default function RepoView() {
   const { repoId } = useParams();
   const navigate = useNavigate();
   const panelFromUrl = new URLSearchParams(window.location.search).get("panel");

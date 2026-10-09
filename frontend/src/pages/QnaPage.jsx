@@ -4,7 +4,7 @@ import { FolderGit2, MessageSquare, Plus } from "lucide-react";
 import AppSidebar from "@/components/AppSidebar";
 import { useRepoStore } from "@/store";
 
-export default function QnaPage({ theme, setTheme }) {
+export default function QnaPage() {
     const navigate = useNavigate();
     const { repos, fetchRepos } = useRepoStore();
 

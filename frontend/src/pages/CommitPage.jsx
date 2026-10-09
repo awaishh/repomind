@@ -63,7 +63,7 @@ function CommitItem({ commit }) {
     );
 }
 
-export default function CommitPage({ theme, setTheme }) {
+export default function CommitPage() {
     const navigate = useNavigate();
     const { repos, fetchRepos } = useRepoStore();
     const [githubUrl, setGithubUrl] = useState("");

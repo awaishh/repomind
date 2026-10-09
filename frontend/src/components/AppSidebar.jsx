@@ -3,6 +3,7 @@ import {
     GitCommit,
     MonitorPlay,
     MessageSquare,
+    MessagesSquare,
     Users,
     Archive,
 } from "lucide-react";
@@ -13,6 +14,7 @@ export default function AppSidebar({ active, repos, navigate, showRepositories =
         { key: "commits", label: "Commit reader", icon: GitCommit, path: "/commits" },
         { key: "meetings", label: "Meeting Room", icon: MonitorPlay, path: "/meetings" },
         { key: "qna", label: "Q&A", icon: MessageSquare, path: "/qna" },
+        { key: "rooms", label: "Dev Rooms", icon: MessagesSquare, path: "/rooms" },
     ];
 
     return (

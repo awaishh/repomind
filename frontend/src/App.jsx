@@ -10,6 +10,8 @@ import RepoView from "./pages/RepoView";
 import CommitPage from "./pages/CommitPage";
 import MeetingPage from "./pages/MeetingPage";
 import QnaPage from "./pages/QnaPage";
+import RoomsPage from "./pages/RoomsPage";
+import JoinRoomPage from "./pages/JoinRoomPage";
 import { Loader2 } from "lucide-react";
 
 // Protected Route wrapper
@@ -122,6 +124,30 @@ function App() {
           element={
             <ProtectedRoute>
               <QnaPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/rooms"
+          element={
+            <ProtectedRoute>
+              <RoomsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/rooms/join"
+          element={
+            <ProtectedRoute>
+              <JoinRoomPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/rooms/:roomId"
+          element={
+            <ProtectedRoute>
+              <RoomsPage />
             </ProtectedRoute>
           }
         />

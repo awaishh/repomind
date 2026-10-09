@@ -40,7 +40,7 @@ const MARQUEE_ITEMS = [
   "React", "Next.js", "Express", "FastAPI", "Rust", "Go", "Django", "Rails",
 ];
 
-export default function LandingPage({ theme, setTheme }) {
+export default function LandingPage() {
   const navigate = useNavigate();
 
   return (

@@ -1,415 +1,244 @@
-<div align="center">
+# RepoMind
 
-<br/>
-
-<img src="https://img.shields.io/badge/REPO-MIND-000000?style=for-the-badge&labelColor=000000&color=white" alt="RepoMind" height="40"/>
-
-<br/><br/>
-
-### AI-Powered Repository Intelligence Platform
-
-<p align="center">
-<em>Link any GitHub repo. Explore it visually. Chat with an AI that has actually read every line of code.</em>
-</p>
-
-<br/>
-
-<p align="center">
-<img src="https://img.shields.io/badge/React_19-61DAFB?style=flat-square&logo=react&logoColor=000" alt="React"/>
-<img src="https://img.shields.io/badge/Vite_8-646CFF?style=flat-square&logo=vite&logoColor=fff" alt="Vite"/>
-<img src="https://img.shields.io/badge/Express_5-000000?style=flat-square&logo=express&logoColor=fff" alt="Express"/>
-<img src="https://img.shields.io/badge/MongoDB_Atlas-47A248?style=flat-square&logo=mongodb&logoColor=fff" alt="MongoDB"/>
-<img src="https://img.shields.io/badge/Google_Gemini-8E75B2?style=flat-square&logo=googlegemini&logoColor=fff" alt="Gemini"/>
-<img src="https://img.shields.io/badge/AssemblyAI-FF6B00?style=flat-square&logo=data:image/svg+xml;base64,&logoColor=fff" alt="AssemblyAI"/>
-<img src="https://img.shields.io/badge/License-MIT-22c55e?style=flat-square" alt="License"/>
-</p>
-
-<br/>
+An AI-powered codebase intelligence platform built on the MERN stack. Link your GitHub repositories, inspect commits and code diffs, ask questions grounded directly in your codebase via local RAG, collaborate in real-time Dev Rooms, and manage your developer profile.
 
 ---
 
-</div>
+## What is RepoMind?
 
-<br/>
+RepoMind is designed for developers who want to understand unfamiliar codebases faster. Instead of manually digging through hundreds of files or waiting for teammates to explain a repository, RepoMind gives you:
 
-## ✦ Overview
+1. **Repository Q&A (RAG Pipeline)**: Ask questions in plain English and get answers with exact file context, powered by local embeddings and local LLMs (or optional cloud models).
+2. **Commit Analyzer Pipeline**: Connect to GitHub to inspect commit logs, view file-by-file diffs, and generate summaries of code changes.
+3. **Dev Rooms**: Real-time team chat rooms powered by Socket.IO with quick QR code joining, code snippet sharing, and instant member navigation.
+4. **Developer Profiles**: Custom profile pictures, organizational affiliation, personal bios, and a direct directory of all joined chat rooms.
+5. **Visual Repository Canvas**: An interactive, zoomable node graph powered by React Flow that makes directory structures visual and intuitive.
 
-**RepoMind** is a full-stack developer intelligence platform that transforms how engineers understand, navigate, and collaborate on codebases. It combines **vector-powered semantic search**, **interactive code visualization**, **AI commit analysis**, and **meeting transcription** into a single, cohesive workspace.
+---
 
-Built on a decoupled architecture that separates lightweight repository metadata linking from compute-heavy vector indexing — delivering instant repository onboarding while deferring expensive embedding generation to lazy execution cycles.
+## Core Features
 
-<br/>
+### 1. Codebase Q&A (Local RAG)
+- **Semantic Code Chunking**: Source files are parsed and split into logical blocks preserving file paths and line ranges using LangChain text splitters.
+- **Vector Search**: Chunks are embedded into 768-dimensional vectors using `nomic-embed-text` and indexed in MongoDB Atlas Vector Search.
+- **Local Inference**: Queries are answered using local models like `qwen2.5-coder` via Ollama (`http://localhost:11434`) — giving you unlimited queries with zero API costs and zero rate limits.
+- **Grounded Responses**: Answers reference relevant files so you can verify the code directly.
 
-## ✦ Core Capabilities
+### 2. Commit Analyzer
+- Connects directly to GitHub via Octokit REST API.
+- Fetches recent commit histories and parses file-level diffs inline.
+- Generates concise change summaries explaining what changed and which modules were affected.
 
-<table>
-<tr>
-<td width="50%">
+### 3. Dev Rooms (Real-time Team Chat)
+- Create or join topic-specific chat rooms.
+- **Instant QR Code Invites**: Invite teammates via scan or shareable room code.
+- **Live Collaboration**: Powered by Socket.IO with typing indicators, active participant lists, and formatted code message mode.
+- **Member Directory**: View room members with role badges (Creator, Admin, Member).
 
-### 🧠 RAG-Powered Code Q&A
-Ask natural language questions about any codebase. RepoMind chunks source files into semantic blocks, embeds them into 768-dimensional vector space via MongoDB Atlas Vector Search, and retrieves the most relevant context for Gemini to generate precise, source-referenced answers.
+### 4. Profiles & In-Chat Profile Viewer
+- Upload profile photos with instant avatar updates across the app.
+- Edit your full name, username, current organization, and developer bio.
+- **In-Chat Profile Card**: Click on any sender's avatar or `@username` in Dev Rooms to view their organization, bio, and joined rooms.
+- **My Chat Groups**: See all your joined rooms in one place with direct one-click navigation.
 
-</td>
-<td width="50%">
+### 5. Interactive Repository Canvas
+- Visual node graph powered by React Flow (XYFlow).
+- Pan, zoom, and inspect directories and files visually without relying solely on the terminal.
 
-### 🌳 Interactive Repository Canvas
-Explore repository structure as a dynamic, zoomable node graph powered by **React Flow**. Click into directories, inspect file hierarchies, and navigate complex codebases visually — no terminal required.
+---
 
-</td>
-</tr>
-<tr>
-<td width="50%">
-
-### 📊 Git Diff Intelligence
-Fetch commit histories directly from GitHub, view file-level diffs inline, and generate AI-powered change summaries. Understand what changed, why it matters, and what areas of the codebase were impacted — all from a single interface.
-
-</td>
-<td width="50%">
-
-### 🎙️ Meeting Room (AssemblyAI)
-Upload audio recordings of standups, code reviews, or technical discussions. AssemblyAI processes speaker diarization, auto-chaptering, and NLP topic segmentation — producing full transcripts, key takeaways, action items, and executive summaries.
-
-</td>
-</tr>
-<tr>
-<td width="50%">
-
-### 👥 Team Collaboration
-Invite collaborators via email, manage workspace access, and share repository intelligence across your team. Built-in invitation workflows and role-based access control.
-
-</td>
-<td width="50%">
-
-### 📦 Project Archival
-Archive inactive projects to declutter your dashboard while preserving all embedded chunks, meeting transcripts, and commit summaries for future reference.
-
-</td>
-</tr>
-</table>
-
-<br/>
-
-## ✦ Architecture
-
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│                        CLIENT  (React / Vite)                       │
-│                                                                     │
-│   Landing ── Auth ── Dashboard ── RepoView ── QnA ── Meetings      │
-│                           │            │        │         │         │
-│                      Sidebar     CanvasView  ChatPanel  Insights    │
-└────────────────────────────┬────────────────────────────────────────┘
-                             │  REST API (JSON)
-                             ▼
-┌─────────────────────────────────────────────────────────────────────┐
-│                      SERVER  (Node.js / Express 5)                  │
-│                                                                     │
-│   Controllers ─── Services ─── Models ─── Middleware                │
-│       │               │           │            │                    │
-│   auth.ctrl      embedding    User          JWT Auth                │
-│   repo.ctrl      chunking    Repo          Multer                   │
-│   chat.ctrl      similarity  Chunk                                  │
-│   commit.ctrl    git ops     Commit                                 │
-│   meeting.ctrl   transcribe  Chat                                   │
-│   invitation.ctrl                                                   │
-└───────┬──────────────┬──────────────┬──────────────┬────────────────┘
-        │              │              │              │
-        ▼              ▼              ▼              ▼
-   ┌─────────┐  ┌────────────┐  ┌──────────┐  ┌────────────┐
-   │ MongoDB │  │   Vector   │  │  Gemini  │  │ AssemblyAI │
-   │  Atlas  │  │   Search   │  │   API    │  │    API     │
-   │         │  │  (cosine)  │  │  (RAG)   │  │  (STT)     │
-   └─────────┘  └────────────┘  └──────────┘  └────────────┘
-```
-
-<br/>
-
-## ✦ RAG Pipeline — How It Works
-
-```
-  ┌──────────┐     ┌───────────────┐     ┌──────────────┐     ┌─────────────┐
-  │  GitHub  │────▶│  AST-Aware    │────▶│  Embedding   │────▶│  MongoDB    │
-  │  Clone   │     │  Chunking     │     │  Generation  │     │  Vector     │
-  │          │     │  (by file +   │     │  (768-dim)   │     │  Index      │
-  │          │     │   structure)  │     │              │     │             │
-  └──────────┘     └───────────────┘     └──────────────┘     └──────┬──────┘
-                                                                     │
-  ┌──────────┐     ┌───────────────┐     ┌──────────────┐            │
-  │ Grounded │◀────│  Context      │◀────│   Cosine     │◀───────────┘
-  │ Answer   │     │  Assembly +   │     │  Similarity  │
-  │ (Gemini) │     │  System Prompt│     │  Retrieval   │
-  └──────────┘     └───────────────┘     └──────────────┘
-```
-
-| Step | Description |
-|------|-------------|
-| **1. Clone & Parse** | Repository is fetched via GitHub API. Files are walked, filtered, and read into memory. |
-| **2. Chunk** | Source code is split into logical, AST-aware blocks preserving file paths and line ranges. |
-| **3. Embed** | Each chunk is embedded into a 768-dimensional dense vector using Google's embedding model. |
-| **4. Index** | Vectors are stored in MongoDB Atlas with a cosine similarity index for fast retrieval. |
-| **5. Retrieve** | User queries are embedded and matched against stored chunks using vector similarity search. |
-| **6. Generate** | Top-K relevant chunks are injected into a deterministic system prompt sent to Gemini for generation. |
-
-<br/>
-
-## ✦ Technology Stack
+## Technology Stack
 
 ### Frontend
-
-| Layer | Technology | Purpose |
-|-------|-----------|---------|
-| Framework | React 19 | Component architecture & UI rendering |
-| Build | Vite 8 | Lightning-fast HMR & bundling |
-| Styling | Tailwind CSS 4 | Utility-first responsive design system |
-| Routing | React Router 7 | Client-side navigation & protected routes |
-| State | Zustand 5 | Lightweight global state management |
-| Visualization | React Flow (XYFlow) | Interactive node-based repository canvas |
-| Editor | Monaco Editor | Syntax-highlighted code viewer |
-| UI Primitives | Radix UI | Accessible dialog, dropdown, tooltip, tabs |
-| Icons | Lucide React | Consistent iconography |
-| HTTP | Axios | API communication layer |
-| Notifications | React Hot Toast | Non-blocking toast notifications |
+- **Framework**: React 19 (SPA)
+- **Build Tool**: Vite
+- **Styling**: Tailwind CSS 4 + custom styling utilities
+- **State Management**: Zustand 5
+- **Routing**: React Router 7
+- **Interactive Graph**: React Flow (XYFlow)
+- **Real-Time Client**: Socket.IO Client
+- **Icons & UI**: Lucide React, React Hot Toast
 
 ### Backend
+- **Runtime**: Node.js (ES Modules) + Express 5
+- **Database & ODM**: MongoDB Atlas + Mongoose 9
+- **Vector Search**: MongoDB Atlas Vector Search (Cosine Similarity)
+- **Local AI / LLM**: Ollama (`qwen2.5-coder` / `qwen2.5` + `nomic-embed-text`)
+- **Cloud AI (Optional)**: Google Gemini API
+- **Real-Time Engine**: Socket.IO
+- **GitHub Integration**: Octokit REST
+- **File Uploads**: Multer + Cloudinary (with local fallback)
+- **Authentication**: JWT (Access & Refresh tokens) + bcryptjs
 
-| Layer | Technology | Purpose |
-|-------|-----------|---------|
-| Runtime | Node.js (ES Modules) | Server-side JavaScript execution |
-| Framework | Express 5 | HTTP routing & middleware pipeline |
-| Database | MongoDB Atlas + Mongoose 9 | Document storage & ODM |
-| Vector Search | MongoDB Atlas Vector Index | Cosine similarity search on embeddings |
-| AI / LLM | Google Gemini API | RAG inference & commit summarization |
-| Embeddings | Google Generative AI SDK | 768-dim vector generation |
-| Code Splitting | LangChain Text Splitters | AST-aware source code chunking |
-| Audio STT | AssemblyAI SDK | Speech-to-text, diarization, chaptering |
-| GitHub | Octokit REST | Repository cloning, commits, diffs |
-| Auth | JWT + bcryptjs | Token-based authentication & hashing |
-| Uploads | Multer | Multipart file upload handling |
-| Realtime | Socket.IO | WebSocket event layer |
+---
 
-<br/>
-
-## ✦ Project Structure
+## Project Structure
 
 ```
 repomind/
 ├── frontend/
-│   └── src/
-│       ├── pages/
-│       │   ├── LandingPage.jsx        # Marketing landing with animated hero
-│       │   ├── LoginPage.jsx          # Authentication — sign in
-│       │   ├── RegisterPage.jsx       # Authentication — sign up
-│       │   ├── Dashboard.jsx          # Repository dashboard & project cards
-│       │   ├── RepoView.jsx           # Canvas + Chat split workspace
-│       │   ├── QnaPage.jsx            # Standalone Q&A interface
-│       │   ├── CommitPage.jsx         # Git commit history & diff viewer
-│       │   └── MeetingPage.jsx        # Meeting upload & transcript viewer
-│       ├── components/
-│       │   ├── AppSidebar.jsx         # Collapsible navigation sidebar
-│       │   ├── CanvasView.jsx         # React Flow node graph renderer
-│       │   ├── ChatPanel.jsx          # RAG chat interface with streaming
-│       │   ├── ProjectInsights.jsx    # Commits, meetings, team, archive tabs
-│       │   └── ui/                    # Radix-based reusable UI primitives
-│       └── lib/
-│           └── api.js                 # Axios instance with interceptors
+│   ├── src/
+│   │   ├── pages/
+│   │   │   ├── LandingPage.jsx     # Product landing & hero
+│   │   │   ├── LoginPage.jsx       # User login
+│   │   │   ├── RegisterPage.jsx    # User signup
+│   │   │   ├── Dashboard.jsx       # Repository dashboard & link repo modal
+│   │   │   ├── RepoView.jsx        # Visual canvas & split chat workspace
+│   │   │   ├── QnaPage.jsx         # Standalone codebase Q&A interface
+│   │   │   ├── CommitPage.jsx      # Commit history & diff analyzer
+│   │   │   ├── MeetingPage.jsx     # Meeting notes & summaries
+│   │   │   ├── RoomsPage.jsx       # Dev Rooms real-time chat & timeline
+│   │   │   ├── JoinRoomPage.jsx    # QR scan & direct room join
+│   │   │   └── ProfilePage.jsx     # User profile, photo upload & groups
+│   │   ├── components/
+│   │   │   ├── AppSidebar.jsx      # Collapsible application sidebar
+│   │   │   └── rooms/
+│   │   │       ├── UserAvatar.jsx        # Color-coded initials & photo avatar
+│   │   │       ├── UserProfileModal.jsx  # In-chat profile viewer modal
+│   │   │       ├── RoomInfoModal.jsx     # Room details & member navigation
+│   │   │       ├── QRCodeModal.jsx       # Shareable QR invitation modal
+│   │   │       ├── CreateRoomModal.jsx   # Create room modal
+│   │   │       └── JoinRoomModal.jsx     # Join room modal
+│   │   └── store/                  # Zustand stores (auth, repos, rooms)
 │
 ├── backend/
-│   └── src/
-│       ├── controllers/
-│       │   ├── auth.controller.js     # Register, login, logout, refresh
-│       │   ├── repo.controller.js     # Link, parse, embed, file tree
-│       │   ├── chat.controller.js     # RAG query execution pipeline
-│       │   ├── commit.controller.js   # Git log, diff fetch, AI summary
-│       │   ├── meeting.controller.js  # Audio upload, AssemblyAI processing
-│       │   └── invitation.controller.js # Team invitation workflows
-│       ├── models/
-│       │   ├── user.models.js         # User schema + password hashing
-│       │   ├── repo.models.js         # Repository metadata & settings
-│       │   ├── chunk.models.js        # Embedded code chunks + vectors
-│       │   ├── commit.models.js       # Cached commit data & summaries
-│       │   └── chat.models.js         # Chat history & Q&A sessions
-│       ├── services/                  # Business logic layer
-│       ├── middlewares/               # JWT auth, validation, error handling
-│       ├── routes/                    # Express route definitions
-│       ├── utils/                     # Helper functions & shared utilities
-│       └── db/                        # MongoDB connection setup
+│   ├── src/
+│   │   ├── controllers/            # Auth, repo, chat, commit, room handlers
+│   │   ├── models/                 # User, Repo, Room, Chunk, Message schemas
+│   │   ├── routes/                 # Express API routes
+│   │   ├── services/
+│   │   │   ├── ollama.service.js   # Local Ollama LLM & embedding operations
+│   │   │   └── rag.service.js      # Chunking, indexing, and context assembly
+│   │   ├── socket.js               # Socket.IO room & messaging event handlers
+│   │   └── db/                     # MongoDB connection
+│   └── uploads/                    # Local temporary storage
 │
 └── README.md
 ```
 
-<br/>
+---
 
-## ✦ Getting Started
+## Getting Started
 
 ### Prerequisites
+- **Node.js**: v18.0.0 or higher
+- **npm**: v9.0.0 or higher
+- **MongoDB**: A local MongoDB instance or MongoDB Atlas cluster (with a Vector Search index for RAG)
+- **Ollama** (recommended for local AI): [Install Ollama](https://ollama.ai)
 
-| Requirement | Version |
-|------------|---------|
-| Node.js | v18.x or higher |
-| npm | v9.x or higher |
-| MongoDB Atlas | With Vector Search enabled |
-| Google Gemini API Key | For RAG inference |
-| AssemblyAI API Key | For meeting transcription |
+If using Ollama, pull the recommended models:
+```bash
+ollama pull qwen2.5-coder
+ollama pull nomic-embed-text
+```
 
-### 1 — Clone the repository
+---
 
+### Installation & Setup
+
+#### 1. Clone the repository
 ```bash
 git clone https://github.com/awaishh/repomind.git
 cd repomind
 ```
 
-### 2 — Configure environment variables
+#### 2. Backend Setup
+Navigate into the `backend` directory and install dependencies:
+```bash
+cd backend
+npm install
+```
 
-Create a `.env` file inside the `backend/` directory:
-
+Create a `.env` file in `backend/` (you can copy `.env.example`):
 ```env
-# ─── Server ───────────────────────────────────────
 PORT=8000
+MONGO_URI=mongodb+srv://<username>:<password>@cluster.mongodb.net/repomind?retryWrites=true&w=majority
 CORS_ORIGIN=http://localhost:5173
 
-# ─── Database ─────────────────────────────────────
-MONGO_URI=mongodb+srv://<username>:<password>@<cluster>.mongodb.net/repomind
-
-# ─── Authentication ───────────────────────────────
-ACCESS_TOKEN_SECRET=<your-access-token-secret>
+# Authentication
+ACCESS_TOKEN_SECRET=your_access_token_secret_key
 ACCESS_TOKEN_EXPIRY=1d
-REFRESH_TOKEN_SECRET=<your-refresh-token-secret>
+REFRESH_TOKEN_SECRET=your_refresh_token_secret_key
 REFRESH_TOKEN_EXPIRY=7d
-JWT_SECRET=<your-jwt-secret>
-TOKEN_ENCRYPTION_KEY=<your-encryption-key>
+TOKEN_ENCRYPTION_KEY=your_token_encryption_key
 
-# ─── AI & Speech APIs ────────────────────────────
-GEMINI_API_KEY=<your-gemini-api-key>
-ASSEMBLYAI_API_KEY=<your-assemblyai-api-key>
+# Local Ollama (Optional custom host/models)
+OLLAMA_HOST=http://localhost:11434
+OLLAMA_CHAT_MODEL=qwen2.5-coder
+OLLAMA_EMBED_MODEL=nomic-embed-text
+
+# Cloud AI (Optional fallback)
+GEMINI_API_KEY=your_gemini_api_key
+
+# Cloudinary (Optional for avatar cloud storage)
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_cloudinary_api_key
+CLOUDINARY_API_SECRET=your_cloudinary_api_secret
 ```
 
-### 3 — Install dependencies
-
+Start the backend development server:
 ```bash
-# Backend
-cd backend && npm install
-
-# Frontend
-cd ../frontend && npm install
+npm run dev
 ```
+The backend will run on `http://localhost:8000`.
 
-### 4 — Start the development servers
-
+#### 3. Frontend Setup
+In a new terminal, navigate into the `frontend` directory and install dependencies:
 ```bash
-# Terminal 1 — Backend (http://localhost:8000)
-cd backend && npm run dev
-
-# Terminal 2 — Frontend (http://localhost:5173)
-cd frontend && npm run dev
+cd frontend
+npm install
 ```
 
-<br/>
-
-## ✦ Vector Search Index Setup
-
-To enable RAG Q&A, create the following index on your `chunks` collection in MongoDB Atlas:
-
-**Index name:** `vector_index`  
-**Type:** Atlas Vector Search
-
-```json
-{
-  "fields": [
-    {
-      "type": "vector",
-      "path": "embedding",
-      "numDimensions": 768,
-      "similarity": "cosine"
-    },
-    {
-      "type": "filter",
-      "path": "repo"
-    },
-    {
-      "type": "filter",
-      "path": "filePath"
-    }
-  ]
-}
+Start the frontend development server:
+```bash
+npm run dev
 ```
-
-<br/>
-
-## ✦ API Reference
-
-### Authentication
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `POST` | `/api/v1/users/register` | Create a new user account |
-| `POST` | `/api/v1/users/login` | Authenticate and receive tokens |
-| `POST` | `/api/v1/users/logout` | Invalidate the current session |
-
-### Repository Management
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `GET` | `/api/v1/repos` | List all linked repositories |
-| `POST` | `/api/v1/repos/link` | Link a new repository via GitHub URL |
-| `GET` | `/api/v1/repos/:id` | Get repository metadata & file tree |
-| `PATCH` | `/api/v1/repos/:id/archive` | Archive / unarchive a project |
-
-### RAG Q&A
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `POST` | `/api/v1/qa/ask` | Execute a contextual natural language query |
-
-### Git Commit Analysis
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `GET` | `/api/v1/repos/:id/commits` | Fetch commit log from GitHub |
-| `GET` | `/api/v1/repos/:id/commits/:sha/diff` | Get file-level diff for a commit |
-| `GET` | `/api/v1/repos/:id/commits/:sha/summary` | AI-generated commit summary |
-
-### Meeting Intelligence
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `POST` | `/api/v1/meetings/:repoId` | Upload audio for transcription |
-| `GET` | `/api/v1/meetings/:repoId` | Retrieve all meeting summaries |
-
-### Team & Invitations
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `POST` | `/api/v1/invitations` | Send a workspace invitation |
-| `GET` | `/api/v1/repos/:id/members` | List team members for a repo |
-
-<br/>
-
-## ✦ Scripts
-
-| Command | Directory | Description |
-|---------|-----------|-------------|
-| `npm run dev` | `frontend/` | Start Vite dev server with HMR |
-| `npm run build` | `frontend/` | Production build |
-| `npm run dev` | `backend/` | Start Express with `--watch` mode |
-| `npm start` | `backend/` | Production server |
-| `npm run reset-db` | `backend/` | Wipe all database collections |
-
-<br/>
-
-## ✦ License
-
-This project is licensed under the **MIT License** — free for personal and commercial use.
-
-<br/>
-
-<div align="center">
+The frontend will run on `http://localhost:5173`.
 
 ---
 
-<br/>
+## Vector Search Index (MongoDB Atlas)
 
-<sub>Built with precision by <strong>Awaish</strong></sub>
+To enable vector similarity search on code chunks in MongoDB Atlas:
+1. Open your cluster in MongoDB Atlas and go to **Atlas Search** / **Vector Search**.
+2. Create a Search Index on the `chunks` collection:
+   - **Index Name**: `vector_index`
+   - **Configuration**:
+     ```json
+     {
+       "fields": [
+         {
+           "type": "vector",
+           "path": "embedding",
+           "numDimensions": 768,
+           "similarity": "cosine"
+         },
+         {
+           "type": "filter",
+           "path": "repo"
+         },
+         {
+           "type": "filter",
+           "path": "filePath"
+         }
+       ]
+     }
+     ```
 
-<br/><br/>
+---
 
-</div>
+## Key Scripts
+
+| Command | Location | Description |
+| :--- | :--- | :--- |
+| `npm run dev` | `backend/` | Starts backend server with nodemon |
+| `npm start` | `backend/` | Runs backend in production mode |
+| `npm run dev` | `frontend/` | Starts Vite development server with HMR |
+| `npm run build` | `frontend/` | Builds optimized production bundle |
+| `npm run lint` | `frontend/` | Runs ESLint checks |
+
+---
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).

@@ -21,6 +21,7 @@ import QRCodeModal from "@/components/rooms/QRCodeModal";
 import CreateRoomModal from "@/components/rooms/CreateRoomModal";
 import JoinRoomModal from "@/components/rooms/JoinRoomModal";
 import RoomInfoModal from "@/components/rooms/RoomInfoModal";
+import UserProfileModal from "@/components/rooms/UserProfileModal";
 import UserAvatar from "@/components/rooms/UserAvatar";
 import { useAuthStore, useRepoStore, useRoomStore } from "@/store";
 import {
@@ -63,6 +64,7 @@ export default function RoomsPage() {
   const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
   const [showRoomOptions, setShowRoomOptions] = useState(false);
   const [mobileShowChat, setMobileShowChat] = useState(false);
+  const [selectedProfileUser, setSelectedProfileUser] = useState(null);
 
   const messagesEndRef = useRef(null);
   const typingTimeoutRef = useRef(null);
@@ -227,12 +229,16 @@ export default function RoomsPage() {
             RepoMind
           </button>
           <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2">
+            <button
+              onClick={() => navigate("/profile")}
+              className="flex items-center gap-2 hover:opacity-80 transition-opacity cursor-pointer"
+              title="View my profile"
+            >
               <UserAvatar user={user} size="sm" />
               <span className="hidden text-xs font-medium text-[#687386] sm:block">
                 {user?.username}
               </span>
-            </div>
+            </button>
           </div>
         </div>
       </header>
@@ -561,7 +567,8 @@ export default function RoomsPage() {
                             <UserAvatar
                               user={msg.sender}
                               size="sm"
-                              className="mb-0.5"
+                              className="mb-0.5 cursor-pointer hover:opacity-85 transition-opacity"
+                              onClick={() => setSelectedProfileUser(msg.sender)}
                               showTooltip
                             />
                           )}
@@ -574,9 +581,14 @@ export default function RoomsPage() {
                             }`}
                           >
                             {!isSelf && (
-                              <span className="mb-1 block font-semibold text-[11px] text-blue-600">
+                              <button
+                                type="button"
+                                onClick={() => setSelectedProfileUser(msg.sender)}
+                                className="mb-1 block font-semibold text-[11px] text-blue-600 hover:underline cursor-pointer text-left"
+                                title={`View @${msg.sender?.username || "user"}'s profile`}
+                              >
                                 @{msg.sender?.username || "Teammate"}
-                              </span>
+                              </button>
                             )}
 
                             {msg.messageType === "code" ? (
@@ -609,7 +621,8 @@ export default function RoomsPage() {
                             <UserAvatar
                               user={user}
                               size="sm"
-                              className="mb-0.5"
+                              className="mb-0.5 cursor-pointer hover:opacity-85 transition-opacity"
+                              onClick={() => setSelectedProfileUser(user)}
                               showTooltip
                             />
                           )}
@@ -756,6 +769,13 @@ export default function RoomsPage() {
           setActiveRoom(joinedRoom);
           setMobileShowChat(true);
         }}
+      />
+
+      {/* User Profile Modal when clicking avatars or usernames */}
+      <UserProfileModal
+        user={selectedProfileUser}
+        isOpen={!!selectedProfileUser}
+        onClose={() => setSelectedProfileUser(null)}
       />
     </div>
   );

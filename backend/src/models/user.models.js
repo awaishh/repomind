@@ -27,6 +27,22 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    fullName: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+    organization: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+    bio: {
+      type: String,
+      default: "",
+      trim: true,
+      maxlength: 250,
+    },
     refreshToken: {
       type: String,
     },

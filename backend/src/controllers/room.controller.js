@@ -63,11 +63,11 @@ export const createRoom = asyncHandler(async (req, res) => {
   await room.save();
 
   const populatedRoom = await Room.findById(room._id)
-    .populate("creator", "username email avatar")
-    .populate("members.user", "username email avatar")
+    .populate("creator", "username email avatar fullName organization")
+    .populate("members.user", "username email avatar fullName organization")
     .populate({
       path: "lastMessage",
-      populate: { path: "sender", select: "username avatar" },
+      populate: { path: "sender", select: "username avatar fullName organization" },
     });
 
   return res
@@ -80,11 +80,11 @@ export const createRoom = asyncHandler(async (req, res) => {
  */
 export const getUserRooms = asyncHandler(async (req, res) => {
   const rooms = await Room.find({ "members.user": req.user._id })
-    .populate("creator", "username avatar")
-    .populate("members.user", "username avatar email")
+    .populate("creator", "username avatar fullName organization")
+    .populate("members.user", "username avatar email fullName organization")
     .populate({
       path: "lastMessage",
-      populate: { path: "sender", select: "username avatar" },
+      populate: { path: "sender", select: "username avatar fullName organization" },
     })
     .sort({ updatedAt: -1 });
 
@@ -102,11 +102,11 @@ export const getRoomDetails = asyncHandler(async (req, res) => {
   }
 
   const room = await Room.findById(roomId)
-    .populate("creator", "username email avatar")
-    .populate("members.user", "username email avatar")
+    .populate("creator", "username email avatar fullName organization")
+    .populate("members.user", "username email avatar fullName organization")
     .populate({
       path: "lastMessage",
-      populate: { path: "sender", select: "username avatar" },
+      populate: { path: "sender", select: "username avatar fullName organization" },
     });
 
   if (!room) {
@@ -200,11 +200,11 @@ export const joinRoom = asyncHandler(async (req, res) => {
   }
 
   const populatedRoom = await Room.findById(room._id)
-    .populate("creator", "username email avatar")
-    .populate("members.user", "username email avatar")
+    .populate("creator", "username email avatar fullName organization")
+    .populate("members.user", "username email avatar fullName organization")
     .populate({
       path: "lastMessage",
-      populate: { path: "sender", select: "username avatar" },
+      populate: { path: "sender", select: "username avatar fullName organization" },
     });
 
   return res
@@ -241,7 +241,7 @@ export const getRoomMessages = asyncHandler(async (req, res) => {
   const limit = Math.min(parseInt(req.query.limit, 10) || 100, 200);
 
   const messages = await RoomMessage.find({ room: roomId })
-    .populate("sender", "username avatar email")
+    .populate("sender", "username avatar email fullName organization")
     .sort({ createdAt: 1 })
     .limit(limit);
 

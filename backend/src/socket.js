@@ -153,7 +153,7 @@ export function initSocket(server) {
           codeLanguage: codeLanguage || "",
         });
 
-        await message.populate("sender", "username avatar email");
+        await message.populate("sender", "username avatar email fullName organization");
 
         room.lastMessage = message._id;
         await room.save();

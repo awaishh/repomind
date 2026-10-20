@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import toast from "react-hot-toast";
 import AppSidebar from "@/components/AppSidebar";
+import UserAvatar from "@/components/rooms/UserAvatar";
 
 const STATUS_MAP = {
   fetching: { label: "Ready", color: "text-emerald-600", dot: "bg-emerald-500" },
@@ -115,12 +116,14 @@ export default function Dashboard() {
         <div className="mx-auto flex h-full max-w-[1440px] items-center justify-between px-6">
           <span className="brand-wordmark text-[#182133]">RepoMind</span>
           <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-full bg-[#1a1a1a] border border-[#262626] flex items-center justify-center text-xs font-medium text-[#737373]">
-                {user?.username?.[0]?.toUpperCase()}
-              </div>
+            <button
+              onClick={() => navigate("/profile")}
+              className="flex items-center gap-2 hover:opacity-80 transition-opacity cursor-pointer"
+              title="View my profile"
+            >
+              <UserAvatar user={user} size="sm" />
               <span className="text-sm text-[#737373] hidden sm:block">{user?.username}</span>
-            </div>
+            </button>
             <button
               onClick={handleLogout}
               className="p-2 rounded-lg text-[#737373] hover:text-white hover:bg-[#1a1a1a] transition-colors cursor-pointer"

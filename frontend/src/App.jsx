@@ -12,6 +12,7 @@ import MeetingPage from "./pages/MeetingPage";
 import QnaPage from "./pages/QnaPage";
 import RoomsPage from "./pages/RoomsPage";
 import JoinRoomPage from "./pages/JoinRoomPage";
+import ProfilePage from "./pages/ProfilePage";
 import { Loader2 } from "lucide-react";
 
 // Protected Route wrapper
@@ -148,6 +149,14 @@ function App() {
           element={
             <ProtectedRoute>
               <RoomsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <ProfilePage />
             </ProtectedRoute>
           }
         />

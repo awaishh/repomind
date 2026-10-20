@@ -6,6 +6,7 @@ import {
     MessagesSquare,
     Users,
     Archive,
+    User,
 } from "lucide-react";
 
 export default function AppSidebar({ active, repos, navigate, showRepositories = true }) {
@@ -15,6 +16,7 @@ export default function AppSidebar({ active, repos, navigate, showRepositories =
         { key: "meetings", label: "Meeting Room", icon: MonitorPlay, path: "/meetings" },
         { key: "qna", label: "Q&A", icon: MessageSquare, path: "/qna" },
         { key: "rooms", label: "Dev Rooms", icon: MessagesSquare, path: "/rooms" },
+        { key: "profile", label: "My Profile", icon: User, path: "/profile" },
     ];
 
     return (

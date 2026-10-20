@@ -38,6 +38,9 @@ const SIZE_CLASSES = {
   sm: "h-7 w-7 text-[11px]",
   md: "h-9 w-9 text-xs",
   lg: "h-11 w-11 text-sm font-semibold",
+  xl: "h-16 w-16 text-xl font-bold",
+  "2xl": "h-24 w-24 text-3xl font-bold",
+  "3xl": "h-28 w-28 text-4xl font-bold",
 };
 
 export default function UserAvatar({
@@ -47,16 +50,18 @@ export default function UserAvatar({
   className = "",
   showTooltip = false,
 }) {
-  const [imageError, setImageError] = useState(false);
+  const [failedUrl, setFailedUrl] = useState(null);
 
-  // Extract username and avatar from user object or props
+  // Extract username, fullName, and avatar from user object or props
   const username =
     (typeof user === "string" ? user : user?.username) ||
     usernameProp ||
     (typeof user === "object" && user?._id ? `user-${user._id.slice(-4)}` : "Teammate");
+  const displayName = (typeof user === "object" && user?.fullName) ? user.fullName : username;
   const avatarUrl = typeof user === "object" ? user?.avatar : "";
+  const imageError = failedUrl === avatarUrl;
 
-  const initials = getInitials(username);
+  const initials = getInitials(displayName);
   const colorClass = getAvatarColor(username);
   const sizeClass = SIZE_CLASSES[size] || SIZE_CLASSES.sm;
 
@@ -65,7 +70,7 @@ export default function UserAvatar({
       <img
         src={avatarUrl}
         alt={username}
-        onError={() => setImageError(true)}
+        onError={() => setFailedUrl(avatarUrl)}
         title={showTooltip ? username : undefined}
         className={`shrink-0 rounded-full object-cover shadow-xs border border-white/10 ${sizeClass} ${className}`}
       />

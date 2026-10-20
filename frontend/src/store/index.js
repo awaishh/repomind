@@ -46,6 +46,27 @@ export const useAuthStore = create((set) => ({
       set({ user: null, isAuthenticated: false, isLoading: false });
     }
   },
+
+  updateProfile: async (profileData) => {
+    const res = await api.patch("/auth/profile", profileData);
+    const updatedUser = res.data.data;
+    set({ user: updatedUser });
+    return updatedUser;
+  },
+
+  updateAvatar: async (formData) => {
+    const res = await api.patch("/auth/avatar", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    const updatedUser = res.data.data;
+    set({ user: updatedUser });
+    return updatedUser;
+  },
+
+  fetchUserProfile: async (userId) => {
+    const res = await api.get(`/auth/user/${userId}`);
+    return res.data.data;
+  },
 }));
 
 export const useRepoStore = create((set) => ({

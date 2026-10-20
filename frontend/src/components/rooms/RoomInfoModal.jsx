@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import toast from "react-hot-toast";
 import UserAvatar from "./UserAvatar";
+import UserProfileModal from "./UserProfileModal";
 import { useAuthStore } from "@/store";
 
 export default function RoomInfoModal({
@@ -23,6 +24,7 @@ export default function RoomInfoModal({
 }) {
   const [searchMember, setSearchMember] = useState("");
   const [copiedCode, setCopiedCode] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
   const { user: currentUser } = useAuthStore();
 
   if (!isOpen || !room) return null;
@@ -166,7 +168,9 @@ export default function RoomInfoModal({
                 return (
                   <div
                     key={memberUser._id || idx}
-                    className="flex items-center justify-between p-3 hover:bg-[#fbfdff] transition-colors"
+                    onClick={() => setSelectedUser(memberUser)}
+                    className="flex items-center justify-between p-3 hover:bg-[#f0f5ff] transition-colors cursor-pointer group rounded-lg"
+                    title={`View @${memberUser.username || "user"}'s profile`}
                   >
                     <div className="flex items-center gap-3 min-w-0">
                       <UserAvatar
@@ -176,9 +180,14 @@ export default function RoomInfoModal({
                       />
                       <div className="min-w-0">
                         <div className="flex items-center gap-1.5">
-                          <span className="truncate text-xs font-semibold text-[#182133]">
+                          <span className="truncate text-xs font-semibold text-[#182133] group-hover:text-blue-600 transition-colors">
                             @{memberUser.username || "Anonymous"}
                           </span>
+                          {memberUser.organization && (
+                            <span className="hidden sm:inline-block truncate text-[10px] text-[#8a94a5]">
+                              · {memberUser.organization}
+                            </span>
+                          )}
                           {isCurrent && (
                             <span className="rounded-md bg-[#edf4ff] px-1.5 py-0.5 text-[9px] font-bold text-blue-600">
                               You
@@ -195,7 +204,7 @@ export default function RoomInfoModal({
                     </div>
 
                     {/* Role Badges */}
-                    <div>
+                    <div className="flex items-center gap-2">
                       {isCreator ? (
                         <span className="inline-flex items-center gap-1 rounded-full border border-amber-200 bg-amber-50 px-2.5 py-0.5 text-[10px] font-semibold text-amber-700">
                           <Crown className="h-3 w-3 text-amber-500" />
@@ -239,6 +248,13 @@ export default function RoomInfoModal({
           </button>
         </div>
       </div>
+
+      {/* User Profile Modal when a member is clicked */}
+      <UserProfileModal
+        user={selectedUser}
+        isOpen={!!selectedUser}
+        onClose={() => setSelectedUser(null)}
+      />
     </div>
   );
 }

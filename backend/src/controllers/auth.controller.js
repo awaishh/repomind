@@ -78,6 +78,9 @@ export const login = asyncHandler(async (req, res) => {
     );
 });
 
+import { uploadToCloudinary } from "../utils/cloudinary.js";
+import Room from "../models/room.models.js";
+
 export const logout = asyncHandler(async (req, res) => {
   await User.findByIdAndUpdate(req.user._id, { $unset: { refreshToken: 1 } });
 
@@ -92,4 +95,96 @@ export const getCurrentUser = asyncHandler(async (req, res) => {
   return res
     .status(200)
     .json(new ApiResponse(200, req.user, "User fetched successfully"));
+});
+
+export const updateProfile = asyncHandler(async (req, res) => {
+  const { fullName, organization, bio, username } = req.body;
+
+  const user = await User.findById(req.user._id);
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
+
+  if (username && username.trim().toLowerCase() !== user.username) {
+    const existing = await User.findOne({
+      username: username.trim().toLowerCase(),
+      _id: { $ne: user._id },
+    });
+    if (existing) {
+      throw new ApiError(409, "Username is already taken");
+    }
+    user.username = username.trim().toLowerCase();
+  }
+
+  if (fullName !== undefined) user.fullName = fullName.trim();
+  if (organization !== undefined) user.organization = organization.trim();
+  if (bio !== undefined) user.bio = bio.trim();
+
+  await user.save({ validateBeforeSave: false });
+
+  const updatedUser = await User.findById(user._id).select(
+    "-password -refreshToken"
+  );
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, updatedUser, "Profile updated successfully"));
+});
+
+export const updateAvatar = asyncHandler(async (req, res) => {
+  const avatarLocalPath = req.file?.path;
+
+  if (!avatarLocalPath) {
+    throw new ApiError(400, "Avatar image file is required");
+  }
+
+  let avatarUrl = "";
+  try {
+    const cloudinaryResponse = await uploadToCloudinary(avatarLocalPath);
+    if (cloudinaryResponse?.secure_url || cloudinaryResponse?.url) {
+      avatarUrl = cloudinaryResponse.secure_url || cloudinaryResponse.url;
+    } else {
+      avatarUrl = `/temp/${req.file.filename}`;
+    }
+  } catch {
+    avatarUrl = `/temp/${req.file.filename}`;
+  }
+
+  const user = await User.findByIdAndUpdate(
+    req.user._id,
+    { $set: { avatar: avatarUrl } },
+    { new: true }
+  ).select("-password -refreshToken");
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, user, "Avatar updated successfully"));
+});
+
+export const getUserProfile = asyncHandler(async (req, res) => {
+  const { userId } = req.params;
+
+  const user = await User.findById(userId).select(
+    "-password -refreshToken"
+  );
+
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
+
+  // Find rooms this user has joined
+  const rooms = await Room.find({ "members.user": user._id })
+    .select("name code description createdAt")
+    .sort({ updatedAt: -1 });
+
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      {
+        user,
+        rooms,
+      },
+      "User profile retrieved successfully"
+    )
+  );
 });
